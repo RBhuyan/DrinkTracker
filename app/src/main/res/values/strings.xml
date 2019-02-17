@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Drink Tracker</string>
+    <string name="Login">Login</string>
 </resources>
