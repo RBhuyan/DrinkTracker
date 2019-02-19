@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "23492477999",
+    "firebase_url": "https://drink-tracker-cbdef.firebaseio.com",
+    "project_id": "drink-tracker-cbdef",
+    "storage_bucket": "drink-tracker-cbdef.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23492477999:android:0effe83ce6c1361e",
+        "android_client_info": {
+          "package_name": "edu.usf.drinktracker.drinktracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "23492477999-7sbp7jj43ebt24qgih59r5319pbhdmgk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUR_0Y6pwMokWdndfWUqCZI8GtgR-Lhp4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
