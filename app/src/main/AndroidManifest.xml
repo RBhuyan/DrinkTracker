@@ -11,8 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
-        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
 
         <activity android:name=".Login">
             <intent-filter>
@@ -21,13 +22,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".Signup"
-                  android:parentActivityName=".Login">
+        <activity android:name=".UberTest" />
+        <activity
+            android:name=".Signup"
+            android:parentActivityName=".Login">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Login" />
         </activity>
+        <activity
+            android:name=".Home"
+            android:label="@string/title_activity_home"></activity>
     </application>
 
 </manifest>

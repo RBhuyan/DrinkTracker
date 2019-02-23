@@ -8,12 +8,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+
 
 public class Signup extends AppCompatActivity {
     private static final String TAG = "Signup";
@@ -24,6 +28,7 @@ public class Signup extends AppCompatActivity {
     private String userId;
     FirebaseDatabase mFirebaseInstance;
     DatabaseReference mFirebaseDatabase;
+    FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,7 @@ public class Signup extends AppCompatActivity {
         emailData = (EditText)findViewById(R.id.emailField);
         registerButton = (Button)findViewById(R.id.registerButton);
 
+        firebaseAuth = FirebaseAuth.getInstance();
         mFirebaseInstance = FirebaseDatabase.getInstance();
 
         // get reference to 'users' node
@@ -70,25 +76,28 @@ public class Signup extends AppCompatActivity {
                 String password = passwordData.getText().toString();
                 String email = emailData.getText().toString();
 
-                //                // Check for already existed userId
-                if (TextUtils.isEmpty(userId)) {
-                    createUser(name, password, email);
-                } else {
-                    updateUser(name, email);
+                if(TextUtils.isEmpty(name)){
+                    Toast.makeText(getApplicationContext(),"Please fill in the required fields",Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                if(TextUtils.isEmpty(password)){
+                    Toast.makeText(getApplicationContext(),"Please fill in the required fields",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(TextUtils.isEmpty(email)){
+                    Toast.makeText(getApplicationContext(),"Please fill in the required fields",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                //Check if existing user is present
+
+                createUser(name, password, email);
             }
         });
 
-        toggleButton();
-    }
 
-    // Changing button text
-    private void toggleButton() {
-        if (TextUtils.isEmpty(userId)) {
-            registerButton.setText("Save");
-        } else {
-            registerButton.setText("Update");
-        }
     }
 
     private void returnToLogin() {
@@ -100,23 +109,20 @@ public class Signup extends AppCompatActivity {
      * Creating new user node under 'users'
      */
     private void createUser(String name, String password, String email) {
-        // TODO
-        // In real apps this userId should be fetched
-        // by implementing firebase auth
+
         if (TextUtils.isEmpty(userId)) {
             userId = mFirebaseDatabase.push().getKey();
         }
 
-        User user = new User(name, password, email);
+        User user = new User(name, password, email, userId);
 
         mFirebaseDatabase.child(userId).setValue(user);
 
         addUserChangeListener();
     }
 
-    /**
-     * User data change listener
-     */
+
+    //Don't think we use this?
     private void addUserChangeListener() {
         // User data change listener
         mFirebaseDatabase.child(userId).addValueEventListener(new ValueEventListener() {
@@ -139,8 +145,6 @@ public class Signup extends AppCompatActivity {
                 emailData.setText("");
                 nameData.setText("");
                 passwordData.setText("");
-
-                toggleButton();
             }
 
             @Override
@@ -149,15 +153,6 @@ public class Signup extends AppCompatActivity {
                 Log.e(TAG, "Failed to read user", error.toException());
             }
         });
-    }
-
-    private void updateUser(String name, String email) {
-        // updating the user via child nodes
-        if (!TextUtils.isEmpty(name))
-            mFirebaseDatabase.child(userId).child("name").setValue(name);
-
-        if (!TextUtils.isEmpty(email))
-            mFirebaseDatabase.child(userId).child("email").setValue(email);
     }
 }
 

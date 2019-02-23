@@ -1,23 +1,23 @@
 package edu.usf.drinktracker.drinktracker;
 
+import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.RelativeLayout;
 
 import com.uber.sdk.android.core.UberSdk;
 import com.uber.sdk.android.rides.RideParameters;
-import com.uber.sdk.core.auth.Scope;
 import com.uber.sdk.rides.client.SessionConfiguration;
 import com.uber.sdk.android.rides.RideRequestButton;
 import com.uber.sdk.rides.client.ServerTokenSession;
 
-public class MainActivity extends AppCompatActivity {
+public class UberTest extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_ubertest);
+        Intent intent = getIntent();
 
         SessionConfiguration config = new SessionConfiguration.Builder()
                 // mandatory
