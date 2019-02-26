@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
-
+//Original min sdk was 17, changed it to 21
 android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "edu.usf.drinktracker.drinktracker"
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"

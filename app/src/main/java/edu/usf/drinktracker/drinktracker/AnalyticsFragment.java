@@ -1,3 +1,6 @@
+/*
+One of the fragments you can access with the bottom navigation bar
+ */
 package edu.usf.drinktracker.drinktracker;
 
 import android.content.Context;
