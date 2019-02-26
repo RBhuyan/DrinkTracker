@@ -1,3 +1,11 @@
+/*
+This is the first part of the signup Window.
+Basically we're just collecting the User's address, weight, and gender.
+If the address or weight have invalid inputs then we need to tell the user those inputs are invalid
+Upon successful validation we send those string variables to the actual Signup class in a bundle
+The Signup class can read those with the default bundle
+ */
+
 package edu.usf.drinktracker.drinktracker;
 
 import android.content.Intent;
@@ -48,10 +56,10 @@ public class InfoSignup extends AppCompatActivity {
         i.putExtra("address", address.getText().toString());
         i.putExtra("weight", weight.getText().toString());
         if(male.isChecked()) {
-            i.putExtra("isMaleChecked", "true");
+            i.putExtra("isMaleChecked", "True");
         }
         else {
-            i.putExtra("isMaleChecked", "false");
+            i.putExtra("isMaleChecked", "False");
         }
         startActivity(i);
     }

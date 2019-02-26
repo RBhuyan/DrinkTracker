@@ -47,6 +47,9 @@ public class Signup extends AppCompatActivity {
         String weight = extras.getString("weight");
         String isMaleString = extras.getString("isMaleChecked");
         String gender = isMaleString.equals("True") ? "Male" : "Female";
+        Log.d("SIGNUPTESTING", address);
+        Log.d("SIGNUPTESTING", weight);
+        Log.d("SIGNUPTESTING", gender);
 
 
         nameData = (EditText)findViewById(R.id.nameField);
