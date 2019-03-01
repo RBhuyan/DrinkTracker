@@ -1,3 +1,4 @@
+//basic login page that implements firebase authorization
 package edu.usf.drinktracker.drinktracker;
 
 import android.content.Intent;

@@ -7,15 +7,24 @@
     tools:context=".NewDrink">
 
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"/>
+
     <Spinner
         android:id="@+id/drink_options"
         android:layout_width="138dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="179dp"
-        android:layout_marginTop="52dp"
-        android:entries="@array/drink_options"/>
+        android:layout_marginStart="186dp"
+        android:layout_marginTop="116dp"
+        android:entries="@array/drink_options" />
 
     <TextView
         android:id="@+id/textView3"
@@ -24,6 +33,7 @@
         android:layout_alignBottom="@+id/drink_options"
         android:layout_alignParentStart="true"
         android:layout_marginStart="77dp"
+        android:layout_marginBottom="-1dp"
         android:text="Drink Choice" />
 
     <TextView
@@ -32,8 +42,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="87dp"
-        android:layout_marginTop="192dp"
+        android:layout_marginStart="103dp"
+        android:layout_marginTop="240dp"
         android:text="Quantity" />
 
     <Spinner
@@ -42,9 +52,9 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/textView4"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="184dp"
-        android:layout_marginTop="-3dp"
-        android:entries="@array/quantity_options"/>
+        android:layout_marginStart="213dp"
+        android:layout_marginTop="-5dp"
+        android:entries="@array/quantity_options" />
 
     <TextView
         android:id="@+id/textView5"
@@ -52,8 +62,8 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/textView4"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="-28dp"
-        android:layout_marginTop="122dp"
+        android:layout_marginStart="-36dp"
+        android:layout_marginTop="173dp"
         android:text="Volume (ounces)" />
 
     <EditText
@@ -61,8 +71,8 @@
         android:layout_width="121dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="103dp"
+        android:layout_marginStart="51dp"
+        android:layout_marginTop="159dp"
         android:layout_toEndOf="@+id/textView3"
         android:ems="10"
         android:inputType="number|numberDecimal"

@@ -1,3 +1,4 @@
+//user class
 package edu.usf.drinktracker.drinktracker;
 import com.google.firebase.database.IgnoreExtraProperties;
 

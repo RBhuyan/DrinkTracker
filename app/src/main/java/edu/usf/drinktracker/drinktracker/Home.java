@@ -1,3 +1,21 @@
+/*
+Our Home class that is shown after the user logs in
+
+The BottomNavigationView is the bottom bar in the home screen.
+
+Basically the Home screen is just that bottom navigation bar and the rest of the app screen is a big content view
+
+The content view is one of the three fragments I've defined in the project (DrinkSession, LogHistory, Analytics)
+
+Content View by default is set to DrinkSession. This means if we tap the LogHistory icon on the bottom navigation bar,
+the current content view will be replaced by the LogHistory fragment view
+
+This is a little annoying because to access data in the DrinkSessionFragment for example, we are no longer accessing an activity
+(as the base activity is Home), but instead we must access the DrinkSession Fragment of Home.
+
+You can think of that as not accessing an object but instead accessing an attribute of an object that can only be
+reached through an accessor method, in this case the accessor method being a fragment call.
+*/
 package edu.usf.drinktracker.drinktracker;
 
 import android.content.Intent;
@@ -70,6 +88,11 @@ public class Home extends AppCompatActivity {
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
 
+        Intent intent = getIntent();
+        if (intent.hasExtra("drink")) {
+            drink = (Drink) intent.getSerializableExtra("drink");
+        }
+
         //get firebase auth instance
         auth = FirebaseAuth.getInstance();
 
@@ -96,9 +119,6 @@ public class Home extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frame_layout, DrinkSessionFragment.newInstance());
         transaction.commit();
-
-        //Used to select an item programmatically
-        //bottomNavigationView.getMenu().getItem(2).setChecked(true);
     }
 
     @Override
@@ -150,5 +170,9 @@ public class Home extends AppCompatActivity {
         if (authListener != null) {
             auth.removeAuthStateListener(authListener);
         }
+    }
+
+    public Drink getDrink(){
+        return drink;
     }
 }

@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,7 +31,9 @@ import java.util.List;
 public class DrinkSessionFragment extends Fragment {
     private Drink mDrink;
     ListView lv;
+    ArrayList<Drink> drinkList = new ArrayList<Drink>();
     DrinkAdapter adapter;
+    String strTest;
 
     //Initializes fragment
     public static DrinkSessionFragment newInstance() {
@@ -57,14 +60,14 @@ public class DrinkSessionFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //Log.d("UNIQUE", Login.currentUser.name);
-        if (Home.drinkList == null) {
-            Home.drinkList = new ArrayList<Drink>();
+        //  testing intents
+        Home home = (Home) getActivity();
+        Drink testingIntentDrink = home.getDrink();
+        if (testingIntentDrink != null) {
+            Toast.makeText(getActivity(), testingIntentDrink.DrinkType, Toast.LENGTH_SHORT).show();
+            drinkList.add(testingIntentDrink);
         }
 
-        for (Drink d : Home.drinkList) {
-            Log.d("UNIQUE", d.DrinkType);
-        }
 
         lv = (ListView) getActivity().findViewById(R.id.drink_list);
 
@@ -77,7 +80,7 @@ public class DrinkSessionFragment extends Fragment {
             }
         });
 
-        adapter = new DrinkAdapter(getActivity(), Home.drinkList);
+        adapter = new DrinkAdapter(getActivity(), drinkList);
         lv.setAdapter(adapter);
 
     }

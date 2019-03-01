@@ -1,3 +1,4 @@
+//Window for a user to input a new drink
 package edu.usf.drinktracker.drinktracker;
 
 import android.app.FragmentManager;
@@ -21,6 +22,7 @@ import java.util.Date;
 public class NewDrink extends AppCompatActivity {
     EditText volume;
     Spinner drinkSelecter, quantitySelecter;
+    android.support.v7.widget.Toolbar toolbar;
     Button button;
     Drink drink;
     @Override
@@ -29,7 +31,10 @@ public class NewDrink extends AppCompatActivity {
         setContentView(R.layout.activity_new_drink);
 
         //Creates an 'up arrow' in the toolbar to go back to the 'home' activity
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);s
 
         drinkSelecter = (Spinner) findViewById(R.id.drink_options);
         quantitySelecter = (Spinner) findViewById(R.id.quantity_options);
@@ -71,8 +76,10 @@ public class NewDrink extends AppCompatActivity {
     private void submit(Drink drink){
         //DrinkSessionFragment frag = new DrinkSessionFragment();
         //frag.setCustomObject(drink);
-        Home.drinkList.add(drink);
+        //Home.drinkList.add(drink);
+
         Intent intent = new Intent(this, Home.class);
+        intent.putExtra("drink", drink);
         //intent.putExtra("selectedDrink", drink);
         startActivity(intent);
     }

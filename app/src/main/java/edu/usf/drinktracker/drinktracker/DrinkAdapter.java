@@ -1,3 +1,5 @@
+//Adapter to dynamically change the listview in the DrinkSessionFragment
+//Once completed the listview will show all drinks drunk in the current drinking session
 package edu.usf.drinktracker.drinktracker;
 
 import android.content.Context;
@@ -37,7 +39,7 @@ public class DrinkAdapter extends ArrayAdapter<Drink> {
         // Populate the data into the template view using the data object
         drinkType.setText(drink.DrinkType);
         drinkVolume.setText(Double.toString(drink.Volume));
-        drinkQuantity.setText(drink.Quantity);
+        drinkQuantity.setText(Integer.toString(drink.Quantity));
 
         return convertView;
     }

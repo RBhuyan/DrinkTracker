@@ -1,5 +1,6 @@
 /*
 One of the fragments you can access with the bottom navigation bar
+Will contain whatever analytic function we invoke to show your drinking history
  */
 package edu.usf.drinktracker.drinktracker;
 

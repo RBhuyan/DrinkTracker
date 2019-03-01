@@ -1,3 +1,5 @@
+//Drink class
+//Parameters are drink type, volume, quantity, and the dateTime of which the user inputted the drink
 package edu.usf.drinktracker.drinktracker;
 
 import java.io.Serializable;
