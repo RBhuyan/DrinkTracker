@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UserSettings">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"/>
+
+    <Button
+        android:id="@+id/change_address_bttn"
+        style="@style/FirebaseUI.Button.AccountChooser.AnonymousButton"
+        android:layout_width="238dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="114dp"
+        android:text="Change Address"
+        android:textAlignment="center"
+        android:textColor="@color/browser_actions_title_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="85dp" />
+
+    <Button
+        android:id="@+id/change_weight_bttn"
+        style="@style/FirebaseUI.Button.AccountChooser.AnonymousButton"
+        android:layout_width="236dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/change_address_bttn"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginBottom="246dp"
+        android:text="Change Weight"
+        android:textAlignment="center"
+        android:textColor="@color/browser_actions_title_color" />
+
+    <Button
+        android:id="@+id/delete_account_bttn"
+        style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
+        android:layout_width="238dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="98dp"
+        android:text="Delete Account"
+        android:textAlignment="center"
+        android:textColor="@color/browser_actions_text_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="85dp" />
+
+    <Button
+        android:id="@+id/submit_bttn"
+        style="@style/FirebaseUI.Button.AccountChooser.PhoneButton"
+        android:layout_width="236dp"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/change_address_bttn"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="27dp"
+        android:text="Apply Changes"
+        android:textAlignment="center"
+        android:textColor="@color/browser_actions_title_color" />
+
+    <EditText
+        android:id="@+id/new_address_txt"
+        style="@style/Widget.AppCompat.EditText"
+        android:layout_width="234dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/change_address_bttn"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="190dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="New Address"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/new_weight_txt"
+        style="@style/Widget.AppCompat.EditText"
+        android:layout_width="234dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/change_weight_bttn"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="2dp"
+        android:layout_marginBottom="182dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="New weight (lbs)"
+        android:visibility="gone" />
+
+</RelativeLayout>

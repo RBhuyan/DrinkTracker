@@ -24,18 +24,14 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.Toolbar;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.firebase.auth.FirebaseAuth;
+
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
@@ -140,6 +136,8 @@ public class Home extends AppCompatActivity {
                 break;
             // action with ID action_settings was selected
             case R.id.action_settings:
+                Intent intent = new Intent(Home.this, UserSettings.class);
+                startActivity(intent);
                 break;
             default:
                 break;

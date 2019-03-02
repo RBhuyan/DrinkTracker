@@ -43,13 +43,11 @@ public class Signup extends AppCompatActivity {
 
         Intent intent = getIntent();
         Bundle extras = getIntent().getExtras();
-        String address = extras.getString("address");
-        String weight = extras.getString("weight");
-        String isMaleString = extras.getString("isMaleChecked");
-        String gender = isMaleString.equals("True") ? "Male" : "Female";
-        Log.d("SIGNUPTESTING", address);
-        Log.d("SIGNUPTESTING", weight);
-        Log.d("SIGNUPTESTING", gender);
+        final String address = extras.getString("address");
+        String weightTxt = extras.getString("weight");
+        final String isMaleString = extras.getString("isMaleChecked");
+        final String gender = isMaleString.equals("True") ? "Male" : "Female";
+        final int weight = Integer.parseInt(weightTxt);
 
 
         nameData = (EditText)findViewById(R.id.nameField);
@@ -73,9 +71,9 @@ public class Signup extends AppCompatActivity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = nameData.getText().toString().trim();
-                String email = emailData.getText().toString().trim();
-                String password = passwordData.getText().toString().trim();
+                final String name = nameData.getText().toString().trim();
+                final String email = emailData.getText().toString().trim();
+                final String password = passwordData.getText().toString().trim();
 
                 if (TextUtils.isEmpty(email)) {
                     Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
@@ -93,12 +91,13 @@ public class Signup extends AppCompatActivity {
                 }
                 //Segment below is responsible for USER DATABASE CREATION
 
-                if (TextUtils.isEmpty(userId)) {
-                    userId = mFirebaseDatabase.push().getKey();
-                }
-                User user = new User(name, password, email, userId);
-                mFirebaseDatabase.child(userId).setValue(user);
-                //addUserChangeListener();
+                //if (TextUtils.isEmpty(userId)) {
+                    //userId = mFirebaseDatabase.push().getKey();
+                //}
+                final User user = new User(name, password, email, weight, address, gender);
+
+                // mFirebaseDatabase.child(userId).setValue(user);
+                //mFirebaseDatabase.child(email).setValue(user);
 
                 //Segment below is responsible for USER AUTHENTICATION CREATION
                 //creates the user
@@ -114,6 +113,8 @@ public class Signup extends AppCompatActivity {
                                     Toast.makeText(Signup.this, "Authentication failed." + task.getException(),
                                             Toast.LENGTH_SHORT).show();
                                 } else {
+                                    String authID = auth.getCurrentUser().getUid();
+                                    mFirebaseDatabase.child(authID).setValue(user);
                                     startActivity(new Intent(Signup.this, Home.class));
                                     finish();
                                 }
@@ -144,7 +145,6 @@ public class Signup extends AppCompatActivity {
                     return;
                 }
 
-                Log.e(TAG, "User data is changed!" + user.name + ", " + user.email);
 
                 // Display newly updated name and email
                 //txtDetails.setText(user.name + ", " + user.email);

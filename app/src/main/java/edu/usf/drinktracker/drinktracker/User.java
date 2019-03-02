@@ -6,20 +6,23 @@ import java.io.Serializable;
 
 @IgnoreExtraProperties
 public class User implements Serializable {
-    public String name;
-    public String email;
-    public String password;
-    public String uID;
-    public String Height;
+    public String Name;
+    public String Email;
+    public String Password;
+    public int Weight;
+    public String Address;
+    String Gender;
 
     public User() {
     }
 
-    public User(String name, String password, String email, String uID) {
-        this.name = name;
-        this.password = password;
-        this.email = email;
-        this.uID = uID;
+    public User(String name, String password, String email, int weight, String address, String gender) {
+        this.Name = name;
+        this.Password = password;
+        this.Email = email;
+        this.Weight = weight;
+        this.Address = address;
+        this.Gender = gender;
     }
 
 
