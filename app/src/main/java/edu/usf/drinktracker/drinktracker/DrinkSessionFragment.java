@@ -20,12 +20,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 public class DrinkSessionFragment extends Fragment {
@@ -33,12 +42,17 @@ public class DrinkSessionFragment extends Fragment {
     ListView lv;
     ArrayList<Drink> drinkList = new ArrayList<Drink>();
     DrinkAdapter adapter;
-    String strTest;
-
+    String strTest, userID;
+    Button startBttn, endBttn;
+    TextView startTxt;
+    FirebaseAuth auth;
+    int sessionNumber;
+    FloatingActionButton fab;
+    Boolean inSession;
+    //TODO: update the toggles of the in session/out of session
     //Initializes fragment
     public static DrinkSessionFragment newInstance() {
         DrinkSessionFragment fragment = new DrinkSessionFragment();
-
         return fragment;
     }
 
@@ -68,20 +82,58 @@ public class DrinkSessionFragment extends Fragment {
             drinkList.add(testingIntentDrink);
         }
 
+        auth = FirebaseAuth.getInstance();
+        userID = auth.getUid();
+
 
         lv = (ListView) getActivity().findViewById(R.id.drink_list);
+        startBttn = (Button) getActivity().findViewById(R.id.start_new_session);
+        endBttn = (Button) getActivity().findViewById(R.id.end_session_bttn);
+        startTxt = (TextView) getActivity().findViewById(R.id.new_session_txt);
+        fab = getActivity().findViewById(R.id.fab);
 
-        //Sets up listener on floating action button
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        //gets the latest session number and if the user is currently in a session
+        FirebaseDatabase.getInstance().getReference()
+                .child("users")
+                .child(userID)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                        sessionNumber = (((Long) map.get("SessionNumber")).intValue());
+                        inSession = map.get("InSession").equals("True");
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {/*Do Nothing*/}
+                });
+
+        //Sets up listener on floating action button to open a new instance of NewDrink
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 newDrinkMenu();
             }
         });
+        //TODO: Handle logic if the user is in a session or not
+        if (inSession) {
+            startTxt.setVisibility(View.INVISIBLE);
+            startBttn.setVisibility(View.INVISIBLE);
+            fab.show();
+            lv.setVisibility(View.VISIBLE);
+            endBttn.setVisibility(View.VISIBLE);
+        }
+        else {
+            startTxt.setVisibility(View.VISIBLE);
+            startBttn.setVisibility(View.VISIBLE);
+            fab.hide();
+            lv.setVisibility(View.INVISIBLE);
+            endBttn.setVisibility(View.INVISIBLE);
+        }
 
         adapter = new DrinkAdapter(getActivity(), drinkList);
         lv.setAdapter(adapter);
+
 
     }
 
@@ -90,9 +142,35 @@ public class DrinkSessionFragment extends Fragment {
         startActivity(intent);
     }
 
-    public static void addNewDrink(Drink drink){
-        //adapter.add(drink);
-        //adapter.notifyDataSetChanged();
-    }
 
+    public void startSession(View view) {
+        FirebaseDatabase.getInstance().getReference()
+                .child("users")
+                .child(userID)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                        sessionNumber = (((Long) map.get("SessionNumber")).intValue()) + 1;
+                        //Sets the user's session number to +1 it's current value and sets In Current Session to be true
+                        FirebaseDatabase.getInstance().getReference()
+                                .child("users")
+                                .child(userID)
+                                .child("SessionNumber").setValue(Long.valueOf(sessionNumber));
+                        FirebaseDatabase.getInstance().getReference()
+                                .child("users")
+                                .child(userID)
+                                .child("InSession").setValue("True");
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {/*Do Nothing, mandatory to put here*/}
+                });
+        startBttn.setVisibility(View.GONE);
+        startTxt.setVisibility(View.GONE);
+        fab.show();
+        lv.setVisibility(View.VISIBLE);
+        endBttn.setVisibility(View.VISIBLE);
+    }
 }

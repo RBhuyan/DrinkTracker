@@ -94,7 +94,7 @@ public class Signup extends AppCompatActivity {
                 //if (TextUtils.isEmpty(userId)) {
                     //userId = mFirebaseDatabase.push().getKey();
                 //}
-                final User user = new User(name, password, email, weight, address, gender);
+                final User user = new User(name, password, email, weight, address, gender, 0, "False");
 
                 // mFirebaseDatabase.child(userId).setValue(user);
                 //mFirebaseDatabase.child(email).setValue(user);
