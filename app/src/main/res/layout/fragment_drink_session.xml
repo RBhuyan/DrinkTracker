@@ -74,7 +74,6 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="156dp"
-            android:onClick="startSession"
             android:text="Start a new Drinking Session!"
             android:visibility="visible" />
 

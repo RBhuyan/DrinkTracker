@@ -25,16 +25,23 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Home extends AppCompatActivity {
     public static ArrayList<Drink> drinkList;
@@ -44,6 +51,9 @@ public class Home extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth auth;
     FirebaseUser user;
+    String userID;
+    public static String homeInSession;
+    int sessionNumber;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -53,9 +63,23 @@ public class Home extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    //mTextMessage.setText(R.string.first_nav_option);
-                    //return true;
-                    selectedFragment = DrinkSessionFragment.newInstance();
+                    FirebaseDatabase.getInstance().getReference()
+                            .child("users")
+                            .child(userID)
+                            .addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    @SuppressWarnings("unchecked")
+                                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                                    sessionNumber = (((Long) map.get("SessionNumber")).intValue());
+                                    homeInSession = map.get("InSession").equals("True") ? "True" : "False";
+
+                                    selectedFragment = DrinkSessionFragment.newInstance();
+                                }
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {}
+                            });
+                    //selectedFragment = DrinkSessionFragment.newInstance();
                     break;
                 case R.id.navigation_dashboard:
                     //mTextMessage.setText(R.string.second_nav_option);
@@ -108,6 +132,9 @@ public class Home extends AppCompatActivity {
                 }
             }
         };
+
+        auth = FirebaseAuth.getInstance();
+        userID = auth.getUid();
 
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
