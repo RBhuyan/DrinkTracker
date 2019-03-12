@@ -73,7 +73,10 @@ public class DrinkSessionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_drink_session, container, false);
+        View view = inflater.inflate(R.layout.fragment_drink_session, container, false);
+
+        return view;
+        //return inflater.inflate(R.layout.fragment_drink_session, container, false);
     }
 
     @Override
@@ -91,7 +94,6 @@ public class DrinkSessionFragment extends Fragment {
         endBttn = (Button) getActivity().findViewById(R.id.end_session_bttn);
         startTxt = (TextView) getActivity().findViewById(R.id.new_session_txt);
         fab = getActivity().findViewById(R.id.fab);
-
 
         //OnClick Listener for the start view button
         startBttn.setOnClickListener(new View.OnClickListener() {
