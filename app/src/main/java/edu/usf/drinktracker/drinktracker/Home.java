@@ -71,8 +71,14 @@ public class Home extends AppCompatActivity {
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     @SuppressWarnings("unchecked")
                                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                    sessionNumber = (((Long) map.get("SessionNumber")).intValue());
-                                    homeInSession = map.get("InSession").equals("True") ? "True" : "False";
+                                    if(map.get("SessionNumber") == null)
+                                        sessionNumber = 0;
+                                    else
+                                        sessionNumber = (((Long) map.get("SessionNumber")).intValue());
+                                    if(map.get("InSession") == null)
+                                        homeInSession = "false";
+                                    else
+                                        homeInSession = map.get("InSession").equals("True") ? "True" : "False";
 
                                     selectedFragment = DrinkSessionFragment.newInstance();
                                 }
