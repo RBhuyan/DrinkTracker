@@ -1,3 +1,4 @@
+//Testing for the Uber API, don't worry about it
 package edu.usf.drinktracker.drinktracker;
 
 import android.content.Intent;

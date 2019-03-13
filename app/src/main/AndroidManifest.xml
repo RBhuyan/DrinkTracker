@@ -38,7 +38,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Home" />
         </activity>
-        <activity android:name=".InfoSignup"></activity>
+        <activity android:name=".InfoSignup" />
+        <activity android:name=".UserSettings">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Home" />
+        </activity>
     </application>
 
 </manifest>

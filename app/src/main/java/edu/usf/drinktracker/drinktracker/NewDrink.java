@@ -1,3 +1,4 @@
+//Window for a user to input a new drink
 package edu.usf.drinktracker.drinktracker;
 
 import android.app.FragmentManager;
@@ -14,6 +15,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -21,14 +26,27 @@ import java.util.Date;
 public class NewDrink extends AppCompatActivity {
     EditText volume;
     Spinner drinkSelecter, quantitySelecter;
+    android.support.v7.widget.Toolbar toolbar;
     Button button;
     Drink drink;
+    int sessionNumber;
+    FirebaseDatabase mFirebaseInstance;
+    DatabaseReference mFirebaseDatabase;
+    FirebaseAuth auth;
+    String userID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_drink);
 
+        Intent intent = getIntent();
+        sessionNumber = intent.getIntExtra("sessionNumber", 0);
+        userID = intent.getStringExtra("userID");
+
         //Creates an 'up arrow' in the toolbar to go back to the 'home' activity
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         drinkSelecter = (Spinner) findViewById(R.id.drink_options);
@@ -46,11 +64,21 @@ public class NewDrink extends AppCompatActivity {
                     return;
                 }
                 Date currentDate = new Date();
+                //TODO: Make sure program does not crash if sessionNumber is invalid
                 Drink drink = new Drink(drinkSelecter.getSelectedItem().toString(), Double.parseDouble(volume.getText().toString()),
-                        Integer.parseInt(quantitySelecter.getSelectedItem().toString()), currentDate );
-                //Now we need to pass this new drink to the drink fragment and update the display, so we use an intent
-                //Unfortunately we can't declare an intent inside of a listener so we make a separate function called submit
+                        Integer.parseInt(quantitySelecter.getSelectedItem().toString()), currentDate, sessionNumber, userID );
 
+                //Writes the drink to real-time database
+                mFirebaseInstance = FirebaseDatabase.getInstance();
+                mFirebaseDatabase = mFirebaseInstance.getReference("drinks");
+                mFirebaseInstance.getReference("app_title").setValue("Realtime Database");
+
+
+
+
+                String drinkKey = mFirebaseDatabase.push().getKey();
+                mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+                mFirebaseDatabase.child("drinks").child(drinkKey).setValue(drink);
 
                 submit(drink);
             }
@@ -69,11 +97,8 @@ public class NewDrink extends AppCompatActivity {
     }
 
     private void submit(Drink drink){
-        //DrinkSessionFragment frag = new DrinkSessionFragment();
-        //frag.setCustomObject(drink);
-        Home.drinkList.add(drink);
         Intent intent = new Intent(this, Home.class);
-        //intent.putExtra("selectedDrink", drink);
+        //intent.putExtra("drink", drink);
         startActivity(intent);
     }
 

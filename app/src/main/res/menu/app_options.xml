@@ -5,9 +5,9 @@
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/action_settings"
         android:title="User Settings"
-        app:showAsAction="never"/>
+        android:showAsAction="never" />
 
     <item android:id="@+id/sign_out"
         android:title="Sign Out"
-        app:showAsAction="never"/>
+        android:showAsAction="never" />
 </menu>
