@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,30 +31,60 @@ import com.google.firebase.database.ValueEventListener;
 public class Signup extends AppCompatActivity {
     private static final String TAG = "Signup";
     EditText nameData, passwordData, emailData;
-    Button registerButton;
+    Button registerButton, back_to_login;
+    EditText addressData, weightData;
+    RadioButton male, female;
     private String userId;
     FirebaseDatabase mFirebaseInstance;
     DatabaseReference mFirebaseDatabase;
     FirebaseAuth auth;
+    String genderData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        Intent intent = getIntent();
+       /* Intent intent = getIntent();
         Bundle extras = getIntent().getExtras();
         final String address = extras.getString("address");
         String weightTxt = extras.getString("weight");
         final String isMaleString = extras.getString("isMaleChecked");
         final String gender = isMaleString.equals("True") ? "Male" : "Female";
-        final int weight = Integer.parseInt(weightTxt);
+        final int weight = Integer.parseInt(weightTxt);*/
+       // all intent data from previous activity not needed because it is all in this one activity now
 
+        addressData = ((EditText) findViewById(R.id.address_text));
+        weightData =((EditText) findViewById(R.id.weight_text));
 
+        male = (RadioButton) findViewById(R.id.male_text);
+        female = (RadioButton) findViewById(R.id.female_text);
+        male.setChecked(true);
         nameData = (EditText)findViewById(R.id.nameField);
         passwordData = (EditText)findViewById(R.id.passwordField);
         emailData = (EditText)findViewById(R.id.emailField);
         registerButton = (Button)findViewById(R.id.registerButton);
+        back_to_login =(Button)findViewById(R.id.back_to_login);
+
+
+        male.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                female.setChecked(false);
+            }
+        });
+
+        female.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                male.setChecked(false);
+            }
+        });
+
+
+        //final int weight = Integer.parseInt(weightTxt);
+        if ( male.isChecked() == true )
+            genderData = "male";
+        else
+            genderData = "female";
 
         auth = FirebaseAuth.getInstance();
 
@@ -66,7 +97,12 @@ public class Signup extends AppCompatActivity {
         // store app title to 'app_title' node
         mFirebaseInstance.getReference("app_title").setValue("Realtime Database");
 
-
+        back_to_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Signup.this, Login.class));
+            }
+        });
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +110,9 @@ public class Signup extends AppCompatActivity {
                 final String name = nameData.getText().toString().trim();
                 final String email = emailData.getText().toString().trim();
                 final String password = passwordData.getText().toString().trim();
+                final String gender = genderData;
+                final String address = addressData.getText().toString().trim();
+                final int weight = Integer.parseInt(weightData.getText().toString());
 
                 if (TextUtils.isEmpty(email)) {
                     Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();

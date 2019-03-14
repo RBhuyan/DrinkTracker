@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,6 +29,7 @@ public class UserSettings extends AppCompatActivity {
     DatabaseReference mFirebaseDatabase;
     FirebaseAuth auth;
     String userID, name, address, email, weightTxt;
+    TextView Uname;
     int weight;
 
     @Override
@@ -45,6 +47,7 @@ public class UserSettings extends AppCompatActivity {
         submitBttn = (Button) findViewById(R.id.submit_bttn);
         changeAddressTxt = (EditText) findViewById(R.id.new_address_txt);
         changeWeightTxt = (EditText) findViewById(R.id.new_weight_txt);
+        Uname = (TextView) findViewById(R.id.user_name);
 
         //Sets up firebase
         auth = FirebaseAuth.getInstance();
@@ -71,7 +74,7 @@ public class UserSettings extends AppCompatActivity {
                     @Override
                     public void onCancelled(DatabaseError databaseError) {/*Do Nothing*/}
                 });
-
+        Uname.setText(name);
         //Sets an OnClick Listener for the change address button
         changeAddressBttn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
