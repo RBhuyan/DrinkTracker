@@ -18,8 +18,8 @@
 
     <FrameLayout
         android:id="@+id/frame_layout"
-        android:layout_width="379dp"
-        android:layout_height="453dp"
+        android:layout_width="380dp"
+        android:layout_height="500dp"
         android:layout_above="@+id/navigation"
         android:animateLayoutChanges="true"
         app:layout_constraintBottom_toTopOf="@+id/navigation"

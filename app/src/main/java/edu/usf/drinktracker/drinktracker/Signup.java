@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,13 +29,16 @@ import com.google.firebase.database.ValueEventListener;
 
 
 public class Signup extends AppCompatActivity {
+    android.support.v7.widget.Toolbar toolbar;
     private static final String TAG = "Signup";
-    EditText nameData, passwordData, emailData;
+    EditText nameData, passwordData, emailData, weightData, address;
     Button registerButton;
-    private String userId;
+    String userId, addressText, gender;
     FirebaseDatabase mFirebaseInstance;
     DatabaseReference mFirebaseDatabase;
     FirebaseAuth auth;
+    RadioButton male, female;
+    Integer weight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,18 +46,31 @@ public class Signup extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
 
         Intent intent = getIntent();
-        Bundle extras = getIntent().getExtras();
-        final String address = extras.getString("address");
-        String weightTxt = extras.getString("weight");
-        final String isMaleString = extras.getString("isMaleChecked");
-        final String gender = isMaleString.equals("True") ? "Male" : "Female";
-        final int weight = Integer.parseInt(weightTxt);
-
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         nameData = (EditText)findViewById(R.id.nameField);
         passwordData = (EditText)findViewById(R.id.passwordField);
         emailData = (EditText)findViewById(R.id.emailField);
         registerButton = (Button)findViewById(R.id.registerButton);
+        male = (RadioButton) findViewById(R.id.male_text);
+        female = (RadioButton) findViewById(R.id.female_text);
+        weightData = (EditText) findViewById(R.id.weight_text);
+        address = (EditText) findViewById(R.id.address_text);
+        male.setChecked(true);
+
+        male.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                female.setChecked(false);
+            }
+        });
+
+        female.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                male.setChecked(false);
+            }
+        });
 
         auth = FirebaseAuth.getInstance();
 
@@ -90,14 +107,23 @@ public class Signup extends AppCompatActivity {
                     return;
                 }
                 //Segment below is responsible for USER DATABASE CREATION
+                if(male.isChecked()) {
+                    gender = "Male";
+                }
+                else {
+                    gender = "Female";
+                }
 
-                //if (TextUtils.isEmpty(userId)) {
-                    //userId = mFirebaseDatabase.push().getKey();
-                //}
-                final User user = new User(name, password, email, weight, address, gender, 0, "False");
-
-                // mFirebaseDatabase.child(userId).setValue(user);
-                //mFirebaseDatabase.child(email).setValue(user);
+                addressText = address.getText().toString();
+                try {
+                    weight = Integer.parseInt(weightData.getText().toString());
+                }
+                catch (Exception e) {
+                    Toast.makeText(Signup.this, "Please enter a valid weight! No decimals needed",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                final User user = new User(name, password, email, weight, addressText, gender, 0, "False");
 
                 //Segment below is responsible for USER AUTHENTICATION CREATION
                 //creates the user
