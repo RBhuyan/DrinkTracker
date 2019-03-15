@@ -143,13 +143,10 @@ public class DrinkSessionFragment extends Fragment {
                         Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
                         if( map.get("SessionNumber") == null)
                             sessionNumber = 0;
-                        else {
+                        else
                             sessionNumber = (((Long) map.get("SessionNumber")).intValue());
-                        }
                         if(map.get("InSession") == null)
-                        {
                             inSession = "false";
-                        }
                         else
                             inSession = map.get("InSession").equals("True")?"True":"False";
                         //sessionNumber = 1;
