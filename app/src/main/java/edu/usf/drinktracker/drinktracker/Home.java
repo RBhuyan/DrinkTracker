@@ -63,23 +63,7 @@ public class Home extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    FirebaseDatabase.getInstance().getReference()
-                            .child("users")
-                            .child(userID)
-                            .addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    @SuppressWarnings("unchecked")
-                                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                    sessionNumber = (((Long) map.get("SessionNumber")).intValue());
-                                    homeInSession = map.get("InSession").equals("True") ? "True" : "False";
-
-                                    selectedFragment = DrinkSessionFragment.newInstance();
-                                }
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {}
-                            });
-                    //selectedFragment = DrinkSessionFragment.newInstance();
+                    selectedFragment = DrinkSessionFragment.newInstance();
                     break;
                 case R.id.navigation_dashboard:
                     //mTextMessage.setText(R.string.second_nav_option);

@@ -8,23 +8,17 @@ TODO: Implement NoSQL Firebase Database
 */
 package edu.usf.drinktracker.drinktracker;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -35,10 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-
-import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 
 public class DrinkSessionFragment extends Fragment {
@@ -48,8 +39,8 @@ public class DrinkSessionFragment extends Fragment {
     DrinkAdapter adapter;
     String strTest, userID;
     Button startBttn, endBttn;
-    TextView startTxt;
     FirebaseAuth auth;
+    TextView startTxt;
     int sessionNumber;
     FloatingActionButton fab;
     String inSession;
@@ -73,10 +64,7 @@ public class DrinkSessionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_drink_session, container, false);
-
-        return view;
-        //return inflater.inflate(R.layout.fragment_drink_session, container, false);
+        return inflater.inflate(R.layout.fragment_drink_session_new, container, false);
     }
 
     @Override
@@ -90,12 +78,12 @@ public class DrinkSessionFragment extends Fragment {
 
 
         lv = (ListView) getActivity().findViewById(R.id.drink_list);
-        startBttn = (Button) getActivity().findViewById(R.id.start_new_session);
         endBttn = (Button) getActivity().findViewById(R.id.end_session_bttn);
-        startTxt = (TextView) getActivity().findViewById(R.id.new_session_txt);
         fab = getActivity().findViewById(R.id.fab);
+        startBttn = (Button) getActivity().findViewById(R.id.start_new_session);
+        startTxt = (TextView) getActivity().findViewById(R.id.new_session_txt);
 
-        //OnClick Listener for the start view button
+
         startBttn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 FirebaseDatabase.getInstance().getReference()
@@ -130,6 +118,8 @@ public class DrinkSessionFragment extends Fragment {
             }
         });
 
+
+
         FirebaseDatabase.getInstance().getReference()
                 .child("users")
                 .child(userID)
@@ -161,7 +151,6 @@ public class DrinkSessionFragment extends Fragment {
                                 adapter = new DrinkAdapter(getActivity(), drinkList);
                                 lv.setAdapter(adapter);
 
-                                //TODO: Handle logic if the user is in a session or not
                                 if (inSession.equals("True")) {
                                     startTxt.setVisibility(View.INVISIBLE);
                                     startBttn.setVisibility(View.INVISIBLE);
