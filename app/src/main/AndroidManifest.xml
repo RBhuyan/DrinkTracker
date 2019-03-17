@@ -38,7 +38,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Home" />
         </activity>
-        <activity android:name=".InfoSignup" />
         <activity android:name=".UserSettings">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -48,6 +47,7 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
     </application>
 
 </manifest>
