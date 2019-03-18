@@ -2,7 +2,6 @@ package edu.usf.drinktracker.drinktracker;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -22,13 +21,16 @@ import java.util.Map;
 
 public class UserSettings extends AppCompatActivity {
     android.support.v7.widget.Toolbar toolbar;
-    Button changeAddressBttn, changeWeightBttn, deleteAccountBttn, submitBttn;
+    Button changeAddressBttn, changeWeightBttn, deleteAccountBttn, submitBttn, changeNameBttn, changeEmailBttn;
     EditText changeAddressTxt, changeWeightTxt;
     FirebaseDatabase mFirebaseInstance;
     DatabaseReference mFirebaseDatabase;
     FirebaseAuth auth;
+    FirebaseUser userFB;
     String userID, name, address, email, weightTxt;
+    EditText changeNameTxt, changeEmailTxt;
     int weight;
+    boolean sameData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +43,15 @@ public class UserSettings extends AppCompatActivity {
 
         changeAddressBttn = (Button) findViewById(R.id.change_address_bttn);
         changeWeightBttn = (Button) findViewById(R.id.change_weight_bttn);
+        changeNameBttn = (Button) findViewById(R.id.change_name_bttn);
+        changeEmailBttn = (Button) findViewById(R.id.change_email_bttn);
         deleteAccountBttn = (Button) findViewById(R.id.delete_account_bttn);
         submitBttn = (Button) findViewById(R.id.submit_bttn);
+
         changeAddressTxt = (EditText) findViewById(R.id.new_address_txt);
         changeWeightTxt = (EditText) findViewById(R.id.new_weight_txt);
+        changeNameTxt = (EditText) findViewById((R.id.new_name_txt));
+        changeEmailTxt = (EditText) findViewById(R.id.new_email_txt) ;
 
         //Sets up firebase
         auth = FirebaseAuth.getInstance();
@@ -52,6 +59,7 @@ public class UserSettings extends AppCompatActivity {
         //mFirebaseDatabase = mFirebaseInstance.getReference("users"); //Gets reference to 'user' node in realtime database
         //mFirebaseInstance.getReference("app_title").setValue("Realtime Database");
         userID = auth.getCurrentUser().getUid();
+
 
         FirebaseDatabase.getInstance().getReference()
                 .child("users")
@@ -66,22 +74,35 @@ public class UserSettings extends AppCompatActivity {
                         address = (String) map.get("Address");
                         weight = ((Long) map.get("Weight")).intValue();
                         weightTxt = String.valueOf(weight);
+
+                        changeNameTxt.setText(name);
+                        changeAddressTxt.setText(address);
+                        changeWeightTxt.setText(weightTxt);
+                        changeEmailTxt.setText(email);
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {/*Do Nothing*/}
                 });
-
+        //Sets onClick listener for change name button
+        changeNameBttn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v){
+                if(!changeNameTxt.isClickable()){
+                    makeClickable(changeNameTxt);
+                }
+                else
+                    makeUnClickable(changeNameTxt);
+            }
+        });
         //Sets an OnClick Listener for the change address button
         changeAddressBttn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (changeAddressTxt.getVisibility() == View.GONE) { //So if the user has not started changing an address already
-                    changeAddressTxt.setVisibility(View.VISIBLE);
-                    changeAddressTxt.setText(address);
+                if (!changeAddressTxt.isClickable()) { //So if the user has not started changing an address already
+                    //makes it clickable, have cursor, and focusable
+                    makeClickable(changeAddressTxt);
                 }
                 else {
-                    //changeAddressTxt.setText(address);
-                    changeAddressTxt.setVisibility(View.GONE);
+                    makeUnClickable(changeAddressTxt);
                 }
             }
         });
@@ -89,45 +110,80 @@ public class UserSettings extends AppCompatActivity {
         //Sets an OnClick Listener for the change address button
         changeWeightBttn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (changeWeightTxt.getVisibility() == View.GONE) { //So if the user has not started changing an address already
-                    changeWeightTxt.setVisibility(View.VISIBLE);
-                    changeWeightTxt.setText(weightTxt);
+                if (!changeWeightTxt.isClickable()) { //So if the user has not started changing an address already
+                    makeClickable(changeWeightTxt);
                 }
                 else {
-                    changeWeightTxt.setVisibility(View.GONE);
-                    //changeWeightTxt.setText(email);
+                    makeUnClickable(changeWeightTxt);
                 }
             }
         });
-
+        changeEmailBttn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v){
+                if(!changeEmailTxt.isClickable()){
+                    makeClickable(changeEmailTxt);
+                }
+                else
+                    makeUnClickable(changeEmailTxt);
+            }
+        });
         submitBttn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (changeWeightTxt.getVisibility() == View.GONE && changeAddressTxt.getVisibility()==View.GONE) { //So if the user has not started changing an address already
-                    Toast.makeText(getApplication(), "No information to update!", Toast.LENGTH_LONG).show();
-                    return;
+                sameData = true; // if any needs to be updated, change to false to trigger no info update toast
+
+                if(changeNameTxt.getText().toString() != name){
+                    FirebaseDatabase.getInstance().getReference()
+                            .child("users")
+                            .child(userID)
+                            .child("Name").setValue(changeNameTxt.getText().toString());
+                    Toast.makeText(getApplication(), "Name updated successfully", Toast.LENGTH_LONG).show();
+                    sameData = false;
                 }
-                if (changeWeightTxt.getVisibility() == View.VISIBLE) {
+                if (changeWeightTxt.getText().toString() != weightTxt) {
                     FirebaseDatabase.getInstance().getReference()
                             .child("users")
                             .child(userID)
                             .child("Weight").setValue(Long.valueOf(changeWeightTxt.getText().toString()));
                     Toast.makeText(getApplication(), "Weight updated successfully", Toast.LENGTH_LONG).show();
+                    sameData = false;
                 }
-                if (changeAddressTxt.getVisibility() == View.VISIBLE) {
+                if (changeAddressTxt.getText().toString() != address) {
                     FirebaseDatabase.getInstance().getReference()
                             .child("users")
                             .child(userID)
                             .child("Address").setValue(changeAddressTxt.getText().toString());
                     Toast.makeText(getApplication(), "Address updated successfully", Toast.LENGTH_LONG).show();
+                    sameData = false;
+                }
+                if(changeEmailTxt.getText().toString() != email){
+                     userFB = FirebaseAuth.getInstance().getCurrentUser();
+                     userFB.updateEmail(email);
+                    Toast.makeText(getApplication(), "Email updated successfully", Toast.LENGTH_LONG).show();
+                    sameData = false;
+                }
+                if (sameData) {
+                    Toast.makeText(getApplication(), "No information to update!", Toast.LENGTH_LONG).show();
+                    return;
                 }
             }
         });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.limited_menu_options, menu);
         return true;
+    }
+    private void makeClickable(EditText temp){
+        temp.setClickable(true);
+        temp.setFocusableInTouchMode(true);
+        temp.setCursorVisible(true);
+    }
+    private void makeUnClickable(EditText temp){
+        temp.setClickable(false);
+        temp.setFocusableInTouchMode(false);
+        temp.setCursorVisible(false);
     }
 }

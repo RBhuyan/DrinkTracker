@@ -104,6 +104,7 @@ public class DrinkSessionFragment extends Fragment {
                                 sessionNumber = (((Long) map.get("SessionNumber")).intValue()) + 1;
                                 gender = (String) map.get("Gender");
                                 weight = ((Long) map.get("Weight")).intValue();
+                              
                                 //Sets the user's session number to +1 it's current value and sets In Current Session to be true
                                 FirebaseDatabase.getInstance().getReference()
                                         .child("users")
@@ -137,8 +138,16 @@ public class DrinkSessionFragment extends Fragment {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         @SuppressWarnings("unchecked")
                         Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                        sessionNumber = (((Long) map.get("SessionNumber")).intValue());
-                        inSession = map.get("InSession").equals("True")?"True":"False";
+                        if( map.get("SessionNumber") == null)
+                            sessionNumber = 0;
+                        else
+                            sessionNumber = (((Long) map.get("SessionNumber")).intValue());
+                        if(map.get("InSession") == null)
+                            inSession = "false";
+                        else
+                            inSession = map.get("InSession").equals("True")?"True":"False";
+                        //sessionNumber = 1;
+                        //inSession = "false";
 
                         DatabaseReference  drinkRef = FirebaseDatabase.getInstance().getReference().child("drinks");
                         drinkRef.addListenerForSingleValueEvent(new ValueEventListener() {
