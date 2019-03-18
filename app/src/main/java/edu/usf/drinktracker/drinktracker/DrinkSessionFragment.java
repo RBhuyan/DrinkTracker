@@ -30,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EventListener;
 import java.util.Map;
 
 
@@ -38,11 +39,11 @@ public class DrinkSessionFragment extends Fragment {
     ListView lv;
     ArrayList<Drink> drinkList = new ArrayList<Drink>();
     DrinkAdapter adapter;
-    String strTest, userID;
+    String strTest, userID, gender;
     Button startBttn, endBttn;
     FirebaseAuth auth;
     TextView startTxt;
-    int sessionNumber;
+    int sessionNumber, weight;
     FloatingActionButton fab;
     String inSession;
     DatabaseReference ref;
@@ -86,6 +87,7 @@ public class DrinkSessionFragment extends Fragment {
         startBttn = (Button) getActivity().findViewById(R.id.start_new_session);
         startTxt = (TextView) getActivity().findViewById(R.id.new_session_txt);
         progress = (ProgressBar) getActivity().findViewById(R.id.progress_circular);
+        fab.clearAnimation();
         fab.hide();
 
         //OH NO
@@ -94,12 +96,14 @@ public class DrinkSessionFragment extends Fragment {
                 FirebaseDatabase.getInstance().getReference()
                         .child("users")
                         .child(userID)
-                        .addValueEventListener(new ValueEventListener() {
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 @SuppressWarnings("unchecked")
                                 Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
                                 sessionNumber = (((Long) map.get("SessionNumber")).intValue()) + 1;
+                                gender = (String) map.get("Gender");
+                                weight = ((Long) map.get("Weight")).intValue();
                                 //Sets the user's session number to +1 it's current value and sets In Current Session to be true
                                 FirebaseDatabase.getInstance().getReference()
                                         .child("users")
@@ -128,7 +132,7 @@ public class DrinkSessionFragment extends Fragment {
         FirebaseDatabase.getInstance().getReference()
                 .child("users")
                 .child(userID)
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         @SuppressWarnings("unchecked")
@@ -137,7 +141,7 @@ public class DrinkSessionFragment extends Fragment {
                         inSession = map.get("InSession").equals("True")?"True":"False";
 
                         DatabaseReference  drinkRef = FirebaseDatabase.getInstance().getReference().child("drinks");
-                        drinkRef.addValueEventListener(new ValueEventListener() {
+                        drinkRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 drinkList = new ArrayList<>();
@@ -197,7 +201,7 @@ public class DrinkSessionFragment extends Fragment {
                FirebaseDatabase.getInstance().getReference()
                        .child("users")
                        .child(userID)
-                       .addValueEventListener(new ValueEventListener() {
+                       .addListenerForSingleValueEvent(new ValueEventListener() {
                            @Override
                            public void onDataChange(DataSnapshot dataSnapshot) {
                                @SuppressWarnings("unchecked")
@@ -227,6 +231,8 @@ public class DrinkSessionFragment extends Fragment {
         Intent intent = new Intent(getContext(), NewDrink.class);
         intent.putExtra("sessionNumber", sessionNumber);
         intent.putExtra("userID", userID);
+        intent.putExtra("gender", gender);
+        intent.putExtra("weight", weight);
         startActivity(intent);
     }
 
