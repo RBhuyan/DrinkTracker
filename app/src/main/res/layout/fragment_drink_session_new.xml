@@ -23,7 +23,8 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="26dp"
-            android:src="@drawable/drink_session_logo" />
+            android:src="@drawable/drink_session_logo"
+            android:visibility="gone" />
 
         <ListView
             android:id="@+id/drink_list"
@@ -47,24 +48,20 @@
             android:layout_marginEnd="26dp"
             android:text="Start a new Drinking Session!"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/truiton_image"
             android:layout_alignBottom="@+id/drink_list"
-            android:layout_gravity="bottom|right"
-            android:layout_marginStart="2dp"
-            android:layout_marginTop="28dp"
-            android:layout_marginEnd="19dp"
-            android:layout_marginBottom="51dp"
+            android:layout_gravity="right | bottom"
+            android:layout_marginStart="325dp"
             android:src="@drawable/rendered_plus_icon"
             android:visibility="visible"
             app:borderWidth="0dp"
             app:elevation="6dp"
-            app:pressedTranslationZ="12dp" />
+            app:pressedTranslationZ="12dp"/>
 
         <Button
             android:id="@+id/start_new_session"
@@ -75,7 +72,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="156dp"
             android:text="Start a new Drinking Session!"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/end_session_bttn"
@@ -89,6 +86,18 @@
             android:text="End Drinking Session"
             android:textAlignment="center"
             android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/progress_circular"
+            android:layout_width="136dp"
+            android:layout_height="157dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="221dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/black"
+            android:visibility="visible"
+            tools:visibility="visible" />
 
     </RelativeLayout>
 </ScrollView>
