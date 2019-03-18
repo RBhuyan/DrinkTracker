@@ -198,10 +198,6 @@ public class Signup extends AppCompatActivity {
                     return;
                 }
 
-
-                // Display newly updated name and email
-                //txtDetails.setText(user.name + ", " + user.email);
-
                 // clear edit text
                 emailData.setText("");
                 nameData.setText("");

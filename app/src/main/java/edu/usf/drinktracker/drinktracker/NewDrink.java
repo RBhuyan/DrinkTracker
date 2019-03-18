@@ -29,11 +29,11 @@ public class NewDrink extends AppCompatActivity {
     android.support.v7.widget.Toolbar toolbar;
     Button button;
     Drink drink;
-    int sessionNumber;
+    int sessionNumber, weight;
     FirebaseDatabase mFirebaseInstance;
     DatabaseReference mFirebaseDatabase;
     FirebaseAuth auth;
-    String userID;
+    String userID, gender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +43,9 @@ public class NewDrink extends AppCompatActivity {
         Intent intent = getIntent();
         sessionNumber = intent.getIntExtra("sessionNumber", 0);
         userID = intent.getStringExtra("userID");
+        gender = intent.getStringExtra("gender");
+        weight = intent.getIntExtra("weight", 0);
+        //TODO: Implement the new Drink object with the user's gender and weight
 
         //Creates an 'up arrow' in the toolbar to go back to the 'home' activity
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.my_toolbar);
