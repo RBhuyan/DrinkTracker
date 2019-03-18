@@ -23,7 +23,8 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="26dp"
-            android:src="@drawable/drink_session_logo" />
+            android:src="@drawable/drink_session_logo"
+            android:visibility="gone" />
 
         <ListView
             android:id="@+id/drink_list"
@@ -47,7 +48,7 @@
             android:layout_marginEnd="26dp"
             android:text="Start a new Drinking Session!"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
@@ -75,7 +76,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="156dp"
             android:text="Start a new Drinking Session!"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/end_session_bttn"
@@ -89,6 +90,18 @@
             android:text="End Drinking Session"
             android:textAlignment="center"
             android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/progress_circular"
+            android:layout_width="136dp"
+            android:layout_height="157dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="221dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/black"
+            android:visibility="visible"
+            tools:visibility="visible" />
 
     </RelativeLayout>
 </ScrollView>

@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,6 +46,8 @@ public class DrinkSessionFragment extends Fragment {
     FloatingActionButton fab;
     String inSession;
     DatabaseReference ref;
+    ProgressBar progress;
+
     //TODO: update the toggles of the in session/out of session
     //Initializes fragment
     public static DrinkSessionFragment newInstance() {
@@ -82,8 +85,10 @@ public class DrinkSessionFragment extends Fragment {
         fab = getActivity().findViewById(R.id.fab);
         startBttn = (Button) getActivity().findViewById(R.id.start_new_session);
         startTxt = (TextView) getActivity().findViewById(R.id.new_session_txt);
+        progress = (ProgressBar) getActivity().findViewById(R.id.progress_circular);
+        fab.hide();
 
-
+        //OH NO
         startBttn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 FirebaseDatabase.getInstance().getReference()
@@ -104,7 +109,7 @@ public class DrinkSessionFragment extends Fragment {
                                         .child("users")
                                         .child(userID)
                                         .child("InSession").setValue("True");
-
+                                progress.setVisibility(View.GONE);
                                 startBttn.setVisibility(View.GONE);
                                 startTxt.setVisibility(View.GONE);
                                 fab.show();
@@ -151,9 +156,10 @@ public class DrinkSessionFragment extends Fragment {
                                 adapter = new DrinkAdapter(getActivity(), drinkList);
                                 lv.setAdapter(adapter);
 
+                                progress.setVisibility(View.GONE);
                                 if (inSession.equals("True")) {
-                                    startTxt.setVisibility(View.INVISIBLE);
-                                    startBttn.setVisibility(View.INVISIBLE);
+                                    startTxt.setVisibility(View.GONE);
+                                    startBttn.setVisibility(View.GONE);
                                     fab.show();
                                     lv.setVisibility(View.VISIBLE);
                                     endBttn.setVisibility(View.VISIBLE);
@@ -162,8 +168,8 @@ public class DrinkSessionFragment extends Fragment {
                                     startTxt.setVisibility(View.VISIBLE);
                                     startBttn.setVisibility(View.VISIBLE);
                                     fab.hide();
-                                    lv.setVisibility(View.INVISIBLE);
-                                    endBttn.setVisibility(View.INVISIBLE);
+                                    lv.setVisibility(View.GONE);
+                                    endBttn.setVisibility(View.GONE);
                                 }
                             }
 
@@ -183,6 +189,38 @@ public class DrinkSessionFragment extends Fragment {
                 newDrinkMenu();
             }
         });
+
+        //When the user ends a session
+        endBttn.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               FirebaseDatabase.getInstance().getReference()
+                       .child("users")
+                       .child(userID)
+                       .addValueEventListener(new ValueEventListener() {
+                           @Override
+                           public void onDataChange(DataSnapshot dataSnapshot) {
+                               @SuppressWarnings("unchecked")
+                               Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                               FirebaseDatabase.getInstance().getReference()
+                                       .child("users")
+                                       .child(userID)
+                                       .child("InSession").setValue("False");
+                               //We increment the session number when a session is started so all we have to do is tell the database
+                               //the user is no longer in a session
+
+                               startBttn.setVisibility(View.VISIBLE);
+                               startTxt.setVisibility(View.VISIBLE);
+                               fab.hide();
+                               lv.setVisibility(View.GONE);
+                               endBttn.setVisibility(View.GONE);
+                           }
+
+                           @Override
+                           public void onCancelled(DatabaseError databaseError) {/*Do Nothing, mandatory to put here*/}
+                       });
+           }
+        });
     }
 
     private void newDrinkMenu() {
@@ -191,4 +229,6 @@ public class DrinkSessionFragment extends Fragment {
         intent.putExtra("userID", userID);
         startActivity(intent);
     }
+
+
 }
