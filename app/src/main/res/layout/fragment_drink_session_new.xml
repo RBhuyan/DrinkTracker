@@ -18,11 +18,10 @@
 
         <ImageView
             android:id="@+id/truiton_image"
-            android:layout_width="338dp"
+            android:layout_width="wrap_content"
             android:layout_height="94dp"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="26dp"
+            android:layout_marginTop="315dp"
             android:src="@drawable/drink_session_logo"
             android:visibility="gone" />
 
@@ -43,11 +42,14 @@
             android:layout_below="@+id/truiton_image"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="26dp"
-            android:layout_marginTop="19dp"
-            android:layout_marginEnd="26dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="-218dp"
+            android:layout_marginEnd="27dp"
+            android:fontFamily="sans-serif-smallcaps"
             android:text="Start a new Drinking Session!"
+            android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textStyle="bold"
             android:visibility="gone" />
 
         <android.support.design.widget.FloatingActionButton
@@ -65,26 +67,34 @@
 
         <Button
             android:id="@+id/start_new_session"
-            style="@style/FirebaseUI.Button.AccountChooser.GitHubButton"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="236dp"
             android:layout_height="61dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="156dp"
-            android:text="Start a new Drinking Session!"
+            android:layout_marginStart="96dp"
+            android:layout_marginEnd="78dp"
+            android:layout_marginBottom="219dp"
+            android:fontFamily="sans-serif-smallcaps"
+            android:text="Start Session"
+            android:textAlignment="center"
+            android:textSize="18sp"
             android:visibility="gone" />
 
         <Button
             android:id="@+id/end_session_bttn"
-            style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
+            style="@style/Widget.AppCompat.Button"
             android:layout_width="241dp"
             android:layout_height="65dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="73dp"
             android:layout_marginTop="149dp"
+            android:fontFamily="sans-serif-smallcaps"
             android:text="End Drinking Session"
             android:textAlignment="center"
+            android:textSize="18sp"
             android:visibility="gone" />
 
         <ProgressBar

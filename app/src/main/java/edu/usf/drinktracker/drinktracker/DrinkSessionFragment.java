@@ -142,7 +142,7 @@ public class DrinkSessionFragment extends Fragment {
                             sessionNumber = 0;
                         else
                             sessionNumber = (((Long) map.get("SessionNumber")).intValue());
-                        if(map.get("InSession") == null)
+                        if(map.get("InSession").equals(null))
                             inSession = "false";
                         else
                             inSession = map.get("InSession").equals("True")?"True":"False";
