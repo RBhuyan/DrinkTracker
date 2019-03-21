@@ -7,38 +7,6 @@
     tools:context=".NewDrink">
 
 
-    <EditText
-        android:id="@+id/time"
-        android:layout_width="121dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="274dp"
-        android:layout_toEndOf="@+id/textView3"
-        android:ems="10"
-        android:inputType="number|numberDecimal"
-        android:text="5:00 PM" />
-
-    <TextView
-        android:id="@+id/textView11"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="111dp"
-        android:layout_marginTop="287dp"
-        android:text="Time" />
-
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="103dp"
-        android:layout_marginTop="240dp"
-        android:text="Quantity" />
-
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
@@ -50,14 +18,12 @@
 
     <Spinner
         android:id="@+id/drink_options"
-        android:layout_width="193dp"
+        android:layout_width="138dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
         android:layout_marginStart="186dp"
         android:layout_marginTop="116dp"
-        android:layout_marginEnd="32dp"
         android:entries="@array/drink_options" />
 
     <TextView

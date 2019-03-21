@@ -90,13 +90,13 @@ public class DrinkSessionFragment extends Fragment {
         fab.clearAnimation();
         fab.hide();
 
-        //OH NO
+        //addListenerForSingleValueEvent
         startBttn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 FirebaseDatabase.getInstance().getReference()
                         .child("users")
                         .child(userID)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                        .addListenerForSingleValueEvent(new ValueEventListener() {  //HERE
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 @SuppressWarnings("unchecked")
@@ -133,7 +133,7 @@ public class DrinkSessionFragment extends Fragment {
         FirebaseDatabase.getInstance().getReference()
                 .child("users")
                 .child(userID)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {  //HERE
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         @SuppressWarnings("unchecked")
@@ -146,11 +146,9 @@ public class DrinkSessionFragment extends Fragment {
                             inSession = "false";
                         else
                             inSession = map.get("InSession").equals("True")?"True":"False";
-                        //sessionNumber = 1;
-                        //inSession = "false";
 
                         DatabaseReference  drinkRef = FirebaseDatabase.getInstance().getReference().child("drinks");
-                        drinkRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        drinkRef.addListenerForSingleValueEvent(new ValueEventListener() { //HERE
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 drinkList = new ArrayList<>();
@@ -210,7 +208,7 @@ public class DrinkSessionFragment extends Fragment {
                FirebaseDatabase.getInstance().getReference()
                        .child("users")
                        .child(userID)
-                       .addListenerForSingleValueEvent(new ValueEventListener() {
+                       .addListenerForSingleValueEvent(new ValueEventListener() {  //HERE
                            @Override
                            public void onDataChange(DataSnapshot dataSnapshot) {
                                @SuppressWarnings("unchecked")
