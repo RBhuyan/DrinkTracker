@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -40,7 +41,7 @@ public class DrinkSessionFragment extends Fragment {
     ArrayList<Drink> drinkList = new ArrayList<Drink>();
     DrinkAdapter adapter;
     String strTest, userID, gender;
-    Button startBttn, endBttn;
+    Button startBttn, endBttn, refresh;
     FirebaseAuth auth;
     TextView startTxt;
     int sessionNumber, weight;
@@ -48,6 +49,8 @@ public class DrinkSessionFragment extends Fragment {
     String inSession;
     DatabaseReference ref;
     ProgressBar progress;
+    ImageView drinkImg;
+    TextView bacTxt, bacVal;
 
     //TODO: update the toggles of the in session/out of session
     //Initializes fragment
@@ -84,9 +87,13 @@ public class DrinkSessionFragment extends Fragment {
         lv = (ListView) getActivity().findViewById(R.id.drink_list);
         endBttn = (Button) getActivity().findViewById(R.id.end_session_bttn);
         fab = getActivity().findViewById(R.id.fab);
+        drinkImg = (ImageView) getActivity().findViewById(R.id.truiton_image);
         startBttn = (Button) getActivity().findViewById(R.id.start_new_session);
+        refresh = (Button) getActivity().findViewById(R.id.refresh);
         startTxt = (TextView) getActivity().findViewById(R.id.new_session_txt);
         progress = (ProgressBar) getActivity().findViewById(R.id.progress_circular);
+        bacTxt = (TextView) getActivity().findViewById(R.id.bac_text);
+        bacVal = (TextView) getActivity().findViewById(R.id.bac_value);
         fab.clearAnimation();
         fab.hide();
 
@@ -117,9 +124,13 @@ public class DrinkSessionFragment extends Fragment {
                                 progress.setVisibility(View.GONE);
                                 startBttn.setVisibility(View.GONE);
                                 startTxt.setVisibility(View.GONE);
+                                drinkImg.setVisibility(View.GONE);
                                 fab.show();
                                 lv.setVisibility(View.VISIBLE);
+                                bacTxt.setVisibility(View.VISIBLE);
+                                bacVal.setVisibility(View.VISIBLE);
                                 endBttn.setVisibility(View.VISIBLE);
+                                refresh.setVisibility(View.VISIBLE);
                             }
 
                             @Override
@@ -142,7 +153,7 @@ public class DrinkSessionFragment extends Fragment {
                             sessionNumber = 0;
                         else
                             sessionNumber = (((Long) map.get("SessionNumber")).intValue());
-                        if(map.get("InSession") == null)
+                        if(map.get("InSession").equals(null))
                             inSession = "false";
                         else
                             inSession = map.get("InSession").equals("True")?"True":"False";
@@ -172,17 +183,25 @@ public class DrinkSessionFragment extends Fragment {
                                 progress.setVisibility(View.GONE);
                                 if (inSession.equals("True")) {
                                     startTxt.setVisibility(View.GONE);
+                                    drinkImg.setVisibility((View.GONE));
                                     startBttn.setVisibility(View.GONE);
                                     fab.show();
                                     lv.setVisibility(View.VISIBLE);
+                                    bacVal.setVisibility(View.VISIBLE);
+                                    bacTxt.setVisibility(View.VISIBLE);
                                     endBttn.setVisibility(View.VISIBLE);
+                                    refresh.setVisibility(View.VISIBLE);
                                 }
                                 else {
                                     startTxt.setVisibility(View.VISIBLE);
+                                    drinkImg.setVisibility(View.VISIBLE);
                                     startBttn.setVisibility(View.VISIBLE);
                                     fab.hide();
                                     lv.setVisibility(View.GONE);
+                                    bacTxt.setVisibility(View.GONE);
+                                    bacVal.setVisibility(View.GONE);
                                     endBttn.setVisibility(View.GONE);
+                                    refresh.setVisibility(View.GONE);
                                 }
                             }
 
@@ -224,9 +243,14 @@ public class DrinkSessionFragment extends Fragment {
 
                                startBttn.setVisibility(View.VISIBLE);
                                startTxt.setVisibility(View.VISIBLE);
+                               drinkImg.setVisibility(View.VISIBLE);
                                fab.hide();
                                lv.setVisibility(View.GONE);
+                               lv.setAdapter(null);
+                               bacVal.setVisibility(View.GONE);
+                               bacTxt.setVisibility(View.GONE);
                                endBttn.setVisibility(View.GONE);
+                               refresh.setVisibility(View.GONE);
                            }
 
                            @Override
