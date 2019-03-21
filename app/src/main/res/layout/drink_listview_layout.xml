@@ -15,7 +15,7 @@
         android:fontFamily="sans-serif-smallcaps"
         android:paddingTop="10dp"
         android:text="Type"
-        android:textSize="24sp" />
+        android:textSize="22sp" />
 
     <TextView
         android:id="@+id/drinkVolume"
@@ -27,7 +27,7 @@
         android:paddingTop="10dp"
         android:text="Volume"
         android:textAlignment="textEnd"
-        android:textSize="24sp" />
+        android:textSize="22sp" />
 
     <TextView
         android:id="@+id/drinkQuantity"
@@ -39,6 +39,6 @@
         android:paddingTop="10dp"
         android:text="Quantity"
         android:textAlignment="textEnd"
-        android:textSize="24sp" />
+        android:textSize="22sp" />
 
 </LinearLayout>
