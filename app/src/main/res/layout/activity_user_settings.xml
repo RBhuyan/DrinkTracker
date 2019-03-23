@@ -19,37 +19,6 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
 
     <Button
-        android:id="@+id/change_address_bttn"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="0dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="2dp"
-        android:fontFamily="sans-serif-smallcaps"
-        android:text="Edit"
-        android:textAlignment="center"
-        android:textColor="@color/uber_black"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/textView10"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/new_address_txt"
-        app:layout_constraintTop_toBottomOf="@+id/textView12" />
-
-    <Button
-        android:id="@+id/change_weight_bttn"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="0dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="2dp"
-        android:fontFamily="sans-serif-smallcaps"
-        android:text="Edit"
-        android:textAlignment="center"
-        android:textColor="@color/uber_black"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/change_address_bttn"
-        app:layout_constraintStart_toEndOf="@+id/new_weight_txt"
-        app:layout_constraintTop_toBottomOf="@+id/textView13" />
-
-    <Button
         android:id="@+id/delete_account_bttn"
         style="@android:style/Widget.DeviceDefault.Button"
         android:layout_width="238dp"
@@ -74,16 +43,13 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="236dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="sans-serif-smallcaps"
         android:text="Apply Changes"
         android:textAlignment="center"
         android:textColor="@color/uber_black"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/change_email_bttn"
-        app:layout_constraintHorizontal_bias="0.539"
+        app:layout_constraintEnd_toEndOf="@+id/new_email_txt"
         app:layout_constraintStart_toStartOf="@+id/new_email_txt"
         app:layout_constraintTop_toBottomOf="@+id/new_email_txt" />
 
@@ -92,10 +58,10 @@
         style="@style/Widget.AppCompat.EditText"
         android:layout_width="0dp"
         android:layout_height="45dp"
-        android:clickable="false"
-        android:cursorVisible="false"
+        android:clickable="true"
+        android:cursorVisible="true"
         android:ems="10"
-        android:focusableInTouchMode="false"
+        android:focusableInTouchMode="true"
         android:inputType="textPersonName"
         android:text="New weight (lbs)"
         android:visibility="visible"
@@ -106,14 +72,15 @@
 
     <EditText
         android:id="@+id/new_name_txt"
-        android:layout_width="227dp"
+        android:layout_width="0dp"
         android:layout_height="45dp"
-        android:clickable="false"
-        android:cursorVisible="false"
+        android:clickable="true"
+        android:cursorVisible="true"
         android:ems="10"
-        android:focusableInTouchMode="false"
+        android:focusableInTouchMode="true"
         android:inputType="textPersonName"
         android:text="Name"
+        app:layout_constraintEnd_toEndOf="@+id/textView10"
         app:layout_constraintStart_toStartOf="@+id/textView10"
         app:layout_constraintTop_toBottomOf="@+id/name_hint" />
 
@@ -134,12 +101,12 @@
 
     <EditText
         android:id="@+id/new_address_txt"
-        android:layout_width="225dp"
+        android:layout_width="0dp"
         android:layout_height="45dp"
-        android:clickable="false"
-        android:cursorVisible="false"
+        android:clickable="true"
+        android:cursorVisible="true"
         android:ems="10"
-        android:focusableInTouchMode="false"
+        android:focusableInTouchMode="true"
         android:inputType="textMultiLine"
         android:text="Address"
         app:layout_constraintEnd_toEndOf="@+id/new_name_txt"
@@ -180,20 +147,6 @@
         app:layout_constraintStart_toStartOf="@+id/new_address_txt"
         app:layout_constraintTop_toBottomOf="@+id/new_address_txt" />
 
-    <Button
-        android:id="@+id/change_name_bttn"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="95dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="2dp"
-        android:fontFamily="sans-serif-smallcaps"
-        android:text="Edit"
-        android:textColor="@color/uber_black"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/textView10"
-        app:layout_constraintStart_toEndOf="@+id/new_name_txt"
-        app:layout_constraintTop_toBottomOf="@+id/name_hint" />
-
     <TextView
         android:id="@+id/textView14"
         android:layout_width="wrap_content"
@@ -209,28 +162,14 @@
         android:id="@+id/new_email_txt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:clickable="false"
-        android:cursorVisible="false"
+        android:clickable="true"
+        android:cursorVisible="true"
         android:ems="10"
-        android:focusableInTouchMode="false"
+        android:focusableInTouchMode="true"
         android:inputType="textEmailAddress"
         android:text="Email"
         app:layout_constraintEnd_toEndOf="@+id/new_weight_txt"
         app:layout_constraintStart_toStartOf="@+id/textView14"
-        app:layout_constraintTop_toBottomOf="@+id/textView14" />
-
-    <Button
-        android:id="@+id/change_email_bttn"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:fontFamily="sans-serif-smallcaps"
-        android:text="Edit"
-        android:textColor="@color/uber_black"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/change_weight_bttn"
-        app:layout_constraintStart_toEndOf="@+id/new_email_txt"
         app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
 </android.support.constraint.ConstraintLayout>

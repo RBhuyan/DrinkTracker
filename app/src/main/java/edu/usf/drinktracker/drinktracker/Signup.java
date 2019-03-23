@@ -116,6 +116,15 @@ public class Signup extends AppCompatActivity {
                 final int weight = Integer.parseInt(weightTxt);
 
                 //this is not working fun fact :)
+                if(TextUtils.isEmpty(name)){
+                    Toast.makeText(getApplicationContext(), "Enter name!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(TextUtils.isEmpty(address)){
+                    Toast.makeText(getApplicationContext(), "Enter address!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if (TextUtils.isEmpty(email)) {
                     Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
                     return;
@@ -130,18 +139,9 @@ public class Signup extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Password too short, enter minimum 6 characters!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(TextUtils.isEmpty(weightTxt)){
-                    Toast.makeText(getApplicationContext(), "Enter weight!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(TextUtils.isEmpty(name)){
-                    Toast.makeText(getApplicationContext(), "Enter name!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(TextUtils.isEmpty(address)){
-                    Toast.makeText(getApplicationContext(), "Enter address!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+
+
+
                 //Segment below is responsible for USER DATABASE CREATION
 
                 //if (TextUtils.isEmpty(userId)) {
