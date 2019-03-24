@@ -150,14 +150,33 @@ public class DrinkSessionFragment extends Fragment {
                                         //r = a gender constant of alcohol distribution (.73 for men and .66 for women)*
                                         //H = hours elapsed since drinking commenced
 
-                                        Double A = 0.0;
+                                        Double A =0.0;
+                                        Double ouncesDrank = 0.0;
                                         int hoursAtFirstDrink = drinkList.get(0).DateTime.getHours();
 
                                         for(int i = 0; i < drinkList.size(); i++)
                                         {
                                             //Get total ounces of alcohol consumed
-                                            A = A + (drinkList.get(i).Quantity * drinkList.get(i).Volume);
                                             Drink currentDrink = drinkList.get(i);
+                                            ouncesDrank = currentDrink.Volume * currentDrink.Quantity;
+
+                                            //Get alcohol content
+                                            if(currentDrink.DrinkType.contains("Beer"))
+                                            {
+                                                A = A + (ouncesDrank * 0.05);
+                                            }
+                                            if(currentDrink.DrinkType.contains("Wine"))
+                                            {
+                                                A = A + (ouncesDrank * 0.12);
+                                            }
+                                            if(currentDrink.DrinkType.contains("Hard Liquor"))
+                                            {
+                                                A = A + (ouncesDrank * 0.4);
+                                            }
+                                            if(currentDrink.DrinkType.contains("Spirits"))
+                                            {
+                                                A = A + (ouncesDrank * 0.15);
+                                            }
                                             if(currentDrink.DateTime.getHours() < hoursAtFirstDrink)
                                             {
                                                 hoursAtFirstDrink = currentDrink.DateTime.getHours();
