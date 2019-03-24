@@ -67,6 +67,10 @@ public class DrinkSessionFragment extends Fragment {
     ImageView drinkImg;
     TextView bacTxt, bacVal;
     private String m_Text = "";
+    Date currDate, loggedDate;
+    String drinkType;
+    int volume, quantity;
+
 
     //TODO: update the toggles of the in session/out of session
     //Initializes fragment
@@ -115,12 +119,20 @@ public class DrinkSessionFragment extends Fragment {
         fab.hide();
 
         //addListenerForSingleValueEvent
+
+        refresh.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v) {
+                bacVal.setVisibility(View.VISIBLE);
+            }
+        });
+        //OH NO
         startBttn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 FirebaseDatabase.getInstance().getReference()
                         .child("users")
                         .child(userID)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {  //HERE
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 @SuppressWarnings("unchecked")
@@ -128,7 +140,11 @@ public class DrinkSessionFragment extends Fragment {
                                 sessionNumber = (((Long) map.get("SessionNumber")).intValue()) + 1;
                                 gender = (String) map.get("Gender");
                                 weight = ((Long) map.get("Weight")).intValue();
-                              
+                                loggedDate = (Date) map.get("DateTime");
+                                drinkType = (String) map.get("DrinkType");
+                                //quantity = (int) map.get("Quantity");
+                                //volume = (int) map.get("Volume");
+
                                 //Sets the user's session number to +1 it's current value and sets In Current Session to be true
                                 FirebaseDatabase.getInstance().getReference()
                                         .child("users")
@@ -138,6 +154,14 @@ public class DrinkSessionFragment extends Fragment {
                                         .child("users")
                                         .child(userID)
                                         .child("InSession").setValue("True");
+
+                                //CALCULATE BAC
+
+                                int bac = weight;
+                                String bac1 = String.valueOf(bac);
+                                bacVal.setText(bac1);
+
+                                //VISIBILITIES
                                 progress.setVisibility(View.GONE);
                                 startBttn.setVisibility(View.GONE);
                                 startTxt.setVisibility(View.GONE);
@@ -162,7 +186,7 @@ public class DrinkSessionFragment extends Fragment {
         FirebaseDatabase.getInstance().getReference()
                 .child("users")
                 .child(userID)
-                .addListenerForSingleValueEvent(new ValueEventListener() {  //HERE
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         @SuppressWarnings("unchecked")
@@ -175,10 +199,11 @@ public class DrinkSessionFragment extends Fragment {
                             inSession = "false";
                         else
                             inSession = map.get("InSession").equals("True")?"True":"False";
+                        //sessionNumber = 1;
+                        //inSession = "false";
 
-                        //ValueEventListener because we need to update the drinkd every time
                         DatabaseReference  drinkRef = FirebaseDatabase.getInstance().getReference().child("drinks");
-                        drinkRef.addValueEventListener(new ValueEventListener() { //HERE
+                        drinkRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 drinkList = new ArrayList<>();
@@ -302,7 +327,7 @@ public class DrinkSessionFragment extends Fragment {
                FirebaseDatabase.getInstance().getReference()
                        .child("users")
                        .child(userID)
-                       .addListenerForSingleValueEvent(new ValueEventListener() {  //HERE
+                       .addListenerForSingleValueEvent(new ValueEventListener() {
                            @Override
                            public void onDataChange(DataSnapshot dataSnapshot) {
                                @SuppressWarnings("unchecked")
