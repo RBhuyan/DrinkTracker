@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.EventListener;
 import java.util.Map;
+import java.text.DecimalFormat;
 
 import static com.firebase.ui.auth.ui.email.EmailLinkFragment.TAG;
 
@@ -70,6 +71,8 @@ public class DrinkSessionFragment extends Fragment {
     Date currDate, loggedDate;
     String drinkType;
     int volume, quantity;
+
+    Double bac = 0.0;
 
 
     //TODO: update the toggles of the in session/out of session
@@ -118,12 +121,119 @@ public class DrinkSessionFragment extends Fragment {
         fab.clearAnimation();
         fab.hide();
 
-        //addListenerForSingleValueEvent
 
         refresh.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v) {
-                bacVal.setVisibility(View.VISIBLE);
+                FirebaseDatabase.getInstance().getReference()
+                        .child("users")
+                        .child(userID)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                @SuppressWarnings("unchecked")
+                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                                final String currGender = (String) map.get("Gender");
+                                final int currWeight = ((Long) map.get("Weight")).intValue();
+                                if (map.get("SessionNumber") == null)
+                                    sessionNumber = 0;
+                                else
+                                    sessionNumber = (((Long) map.get("SessionNumber")).intValue());
+                                if (map.get("InSession").equals(null))
+                                    inSession = "false";
+                                else
+                                    inSession = map.get("InSession").equals("True") ? "True" : "False";
+
+
+                                final DatabaseReference drinks = FirebaseDatabase.getInstance().getReference().child("drinks");
+                                drinks.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                                    {
+                                        drinkList = new ArrayList<>();
+                                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                            String drinkType = ds.child("DrinkType").getValue(String.class);
+                                            Double volume = ds.child("Volume").getValue(Double.class);
+                                            Date drinkDate = ds.child("DateTime").getValue(Date.class);
+                                            int quantity = ds.child("Quantity").getValue(int.class);
+                                            int drinkSessionNumber = ds.child("SessionNumber").getValue(int.class);
+                                            String drinkUserID = ds.child("UserID").getValue(String.class);
+                                            if (drinkSessionNumber == sessionNumber && drinkUserID.equals(userID)) {
+                                                drinkList.add(new Drink(drinkType, volume, quantity, drinkDate, drinkSessionNumber, userID));
+                                            }
+                                        }
+
+                                        //Calculate BAC
+                                        //% BAC = (A x 5.14 / W x r) – .015 x H
+                                        //A = liquid ounces of alcohol consumed
+                                        //W = a person’s weight in pounds
+                                        //r = a gender constant of alcohol distribution (.73 for men and .66 for women)*
+                                        //H = hours elapsed since drinking commenced
+
+                                        Double A =0.0;
+                                        Double ouncesDrank = 0.0;
+                                        int hoursAtFirstDrink = drinkList.get(0).DateTime.getHours();
+
+                                        for(int i = 0; i < drinkList.size(); i++)
+                                        {
+                                            //Get total ounces of alcohol consumed
+                                            Drink currentDrink = drinkList.get(i);
+                                            ouncesDrank = currentDrink.Volume * currentDrink.Quantity;
+
+                                            //Get alcohol content
+                                            if(currentDrink.DrinkType.contains("Beer"))
+                                            {
+                                                A = A + (ouncesDrank * 0.05);
+                                            }
+                                            if(currentDrink.DrinkType.contains("Wine"))
+                                            {
+                                                A = A + (ouncesDrank * 0.12);
+                                            }
+                                            if(currentDrink.DrinkType.contains("Hard Liquor"))
+                                            {
+                                                A = A + (ouncesDrank * 0.4);
+                                            }
+                                            if(currentDrink.DrinkType.contains("Spirits"))
+                                            {
+                                                A = A + (ouncesDrank * 0.15);
+                                            }
+                                            if(currentDrink.DateTime.getHours() < hoursAtFirstDrink)
+                                            {
+                                                hoursAtFirstDrink = currentDrink.DateTime.getHours();
+                                            }
+
+
+                                        }
+                                        Double r;
+                                        if(currGender == "Female")
+                                            r = 0.66;
+                                        else
+                                            r = 0.73;
+
+
+                                        Date currDate = new Date();
+                                        int currHour = currDate.getHours();
+
+                                        int H = currHour - hoursAtFirstDrink;
+
+                                        bac = (A * 5.14)/(currWeight * r) - (0.015 * H);
+                                        DecimalFormat df2 = new DecimalFormat(".##");
+                                        //df2.format(bac);
+                                        //String bacText = bac.toString();
+                                        bacVal.setText(df2.format(bac));
+                                        bacVal.setVisibility(View.VISIBLE);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
             }
         });
         //OH NO
@@ -154,14 +264,6 @@ public class DrinkSessionFragment extends Fragment {
                                         .child("users")
                                         .child(userID)
                                         .child("InSession").setValue("True");
-
-                                //CALCULATE BAC
-
-                                int bac = weight;
-                                String bac1 = String.valueOf(bac);
-                                bacVal.setText(bac1);
-
-                                //VISIBILITIES
                                 progress.setVisibility(View.GONE);
                                 startBttn.setVisibility(View.GONE);
                                 startTxt.setVisibility(View.GONE);
