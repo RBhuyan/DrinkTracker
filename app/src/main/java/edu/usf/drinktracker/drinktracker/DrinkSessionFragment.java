@@ -148,7 +148,7 @@ public class DrinkSessionFragment extends Fragment {
                             inSession = map.get("InSession").equals("True")?"True":"False";
 
                         //ValueEventListener because we need to update the drinkd every time
-                        DatabaseReference  drinkRef = FirebaseDatabase.getInstance().getReference().child("drinks");
+                       DatabaseReference  drinkRef = FirebaseDatabase.getInstance().getReference().child("drinks");
                         drinkRef.addValueEventListener(new ValueEventListener() { //HERE
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
