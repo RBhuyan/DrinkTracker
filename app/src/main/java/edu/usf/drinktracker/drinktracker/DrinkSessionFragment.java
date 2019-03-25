@@ -8,12 +8,18 @@ TODO: Implement NoSQL Firebase Database
 */
 package edu.usf.drinktracker.drinktracker;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
@@ -27,8 +33,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -42,11 +52,15 @@ import com.uber.sdk.android.rides.RideRequestButton;
 import com.uber.sdk.rides.client.ServerTokenSession;
 import com.uber.sdk.rides.client.SessionConfiguration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EventListener;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.text.DecimalFormat;
+import java.util.concurrent.Executor;
 
 import static com.firebase.ui.auth.ui.email.EmailLinkFragment.TAG;
 
@@ -56,7 +70,7 @@ public class DrinkSessionFragment extends Fragment {
     ListView lv;
     ArrayList<Drink> drinkList = new ArrayList<Drink>();
     DrinkAdapter adapter;
-    String strTest, userID, gender;
+    String strTest, userID, gender, address;
     Button startBttn, endBttn, refresh, ride;
     FirebaseAuth auth;
     TextView startTxt;
@@ -71,6 +85,11 @@ public class DrinkSessionFragment extends Fragment {
     Date currDate, loggedDate;
     String drinkType;
     int volume, quantity;
+    double homeLatitude, homeLongitude;
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private int locationRequestCode = 1000;
+    private double wayLatitude = 0.0, wayLongitude = 0.0;
+    public FusedLocationProviderClient mFusedLocationClient;
 
     Double bac = 0.0;
 
@@ -303,7 +322,7 @@ public class DrinkSessionFragment extends Fragment {
                             inSession = map.get("InSession").equals("True")?"True":"False";
                         //sessionNumber = 1;
                         //inSession = "false";
-
+                            address = map.get("Address").toString();
                         DatabaseReference  drinkRef = FirebaseDatabase.getInstance().getReference().child("drinks");
                         drinkRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -372,7 +391,22 @@ public class DrinkSessionFragment extends Fragment {
         ride.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //Location stuff
+                Geocoder geocoder = new Geocoder(getContext());
+                List<Address> addresses = null;
+                try {
+                    addresses = geocoder.getFromLocationName(address, 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if(addresses != null) {
+                    homeLatitude= addresses.get(0).getLatitude();
+                    homeLongitude= addresses.get(0).getLongitude();
+                }
+                else{
+                    homeLatitude= 28.056999; //if not valid address, set coords to USF
+                    homeLongitude = -82.425987;
+                }
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 builder.setTitle("\n");
                 // Set up the input
@@ -394,21 +428,22 @@ public class DrinkSessionFragment extends Fragment {
                 //ConstraintLayout layout = (ConstraintLayout) getView();
                 //layout.addView(requestButton);
 
-                RideParameters rideParams = new RideParameters.Builder()
-                        // Optional product_id from /v1/products endpoint (e.g. UberX). If not provided, most cost-efficient product will be used
-                        .setProductId("a1111c8c-c720-46c3-8534-2fcdd730040d")
-                        // Required for price estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of dropoff location
-                        .setDropoffLocation(
-                                37.775304, -122.417522, "Uber HQ", "1455 Market Street, San Francisco")
-                        // Required for pickup estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of pickup location
-                        .setPickupLocation(37.775304, -122.417522, "Uber HQ", "1455 Market Street, San Francisco")
-                        .build();
-// set parameters for the RideRequestButton instance
-                requestButton.setRideParameters(rideParams);
+                    RideParameters rideParams = new RideParameters.Builder()
+                            // Optional product_id from /v1/products endpoint (e.g. UberX). If not provided, most cost-efficient product will be used
+                            //.setProductId("a1111c8c-c720-46c3-8534-2fcdd730040d")
+                            // Required for price estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of dropoff location
+                            .setDropoffLocation(
+                                    homeLatitude, homeLongitude, "Home", address)
+                            // Required for pickup estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of pickup location
+                            .setPickupLocation(27.962975, -82.283429, "Current Location", "132 Valley Cir, Brandon, FL 33510")
 
-                ServerTokenSession session = new ServerTokenSession(config);
-                requestButton.setSession(session);
-                requestButton.loadRideInformation();
+                            .build();
+// set parameters for the RideRequestButton instance
+                    requestButton.setRideParameters(rideParams);
+
+                    ServerTokenSession session = new ServerTokenSession(config);
+                    requestButton.setSession(session);
+                    requestButton.loadRideInformation();
 
                 builder.setView(requestButton);
 
@@ -459,6 +494,7 @@ public class DrinkSessionFragment extends Fragment {
                        });
            }
         });
+
     }
 
     private void newDrinkMenu() {

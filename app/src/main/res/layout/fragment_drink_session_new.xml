@@ -28,6 +28,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView2"
         android:layout_alignTop="@+id/drink_list"
         tools:layout_editor_absoluteX="0dp" />
+
     <ListView
         android:id="@+id/drink_list"
         android:layout_width="match_parent"
@@ -161,9 +162,9 @@
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="38dp"
-        android:layout_marginEnd="13dp"
-        android:background="@android:drawable/ic_popup_sync"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="28dp"
+        android:background="@android:drawable/stat_notify_sync"
         android:gravity="right|bottom"
         android:visibility="gone" />
 
@@ -180,7 +181,7 @@
         android:text="Need a Ride?"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
 
 </RelativeLayout>
