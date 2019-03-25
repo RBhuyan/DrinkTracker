@@ -102,9 +102,12 @@ public class Login extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             Log.d(TAG, "Email sent.");
+                                            Toast.makeText(getApplicationContext(), "Password reset email sent! Check email for further instructions.", Toast.LENGTH_LONG).show();
                                         }
+                                        else Toast.makeText(getApplicationContext(), "Invalid email.", Toast.LENGTH_SHORT).show();
                                     }
                                 });
+
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
