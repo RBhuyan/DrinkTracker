@@ -57,16 +57,16 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class Home extends AppCompatActivity {
-    public static ArrayList<Drink> drinkList;
+    public ArrayList<Drink> drinkList;
     private TextView mTextMessage;
     android.support.v7.widget.Toolbar toolbar;
     Drink drink;
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth auth;
     FirebaseUser user;
-    String userID;
+    String userID, gender;
     public static String homeInSession;
-    int sessionNumber;
+    int sessionNumber, weight;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
@@ -209,6 +209,26 @@ public class Home extends AppCompatActivity {
 
     public Drink getDrink(){
         return drink;
+    }
+
+    public String getGender(){
+        return gender;
+    }
+
+    public int getWeight(){
+        return weight;
+    }
+
+    public void setGender(String g) { gender = g; }
+
+    public void setWeight(int w) { weight = w; }
+
+    public void setDrinkList(ArrayList<Drink> tempList) {
+        drinkList = tempList;
+    }
+
+    public ArrayList<Drink> getDrinkList(){
+        return drinkList;
     }
 
     public Location updateLocation() {

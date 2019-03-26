@@ -38,6 +38,7 @@ public class DrinkSessionFragment extends Fragment {
     private Drink mDrink;
     ListView lv;
     ArrayList<Drink> drinkList = new ArrayList<Drink>();
+    ArrayList<Drink> totalDrinkList = new ArrayList<Drink>();
     DrinkAdapter adapter;
     String strTest, userID, gender;
     Button startBttn, endBttn;
@@ -75,7 +76,7 @@ public class DrinkSessionFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //  testing intents
-        Home home = (Home) getActivity();
+        final Home home = (Home) getActivity();
 
         auth = FirebaseAuth.getInstance();
         userID = auth.getUid();
@@ -104,6 +105,9 @@ public class DrinkSessionFragment extends Fragment {
                                 sessionNumber = (((Long) map.get("SessionNumber")).intValue()) + 1;
                                 gender = (String) map.get("Gender");
                                 weight = ((Long) map.get("Weight")).intValue();
+
+                                home.setGender(gender);
+                                home.setWeight(weight);
                               
                                 //Sets the user's session number to +1 it's current value and sets In Current Session to be true
                                 FirebaseDatabase.getInstance().getReference()
@@ -153,6 +157,7 @@ public class DrinkSessionFragment extends Fragment {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 drinkList = new ArrayList<>();
+                                totalDrinkList = new ArrayList<>();
                                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
                                     String drinkType = ds.child("DrinkType").getValue(String.class);
                                     Double volume = ds.child("Volume").getValue(Double.class);
@@ -160,10 +165,14 @@ public class DrinkSessionFragment extends Fragment {
                                     int quantity = ds.child("Quantity").getValue(int.class);
                                     int drinkSessionNumber =  ds.child("SessionNumber").getValue(int.class);
                                     String drinkUserID = ds.child("UserID").getValue(String.class);
+                                    if (drinkUserID.equals(userID)) {
+                                        totalDrinkList.add(new Drink(drinkType, volume, quantity, drinkDate, drinkSessionNumber, userID));
+                                    }
                                     if (drinkSessionNumber == sessionNumber && drinkUserID.equals(userID)) {
                                         drinkList.add(new Drink(drinkType, volume, quantity, drinkDate, drinkSessionNumber, userID));
                                     }
                                 }
+                                home.setDrinkList(totalDrinkList);
 
                                 adapter = new DrinkAdapter(getActivity(), drinkList);
                                 lv.setAdapter(adapter);
@@ -206,6 +215,7 @@ public class DrinkSessionFragment extends Fragment {
         endBttn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
+               /*
                FirebaseDatabase.getInstance().getReference()
                        .child("users")
                        .child(userID)
@@ -220,6 +230,8 @@ public class DrinkSessionFragment extends Fragment {
                                        .child("InSession").setValue("False");
                                //We increment the session number when a session is started so all we have to do is tell the database
                                //the user is no longer in a session
+                               */
+                                FirebaseDatabase.getInstance().getReference().child("users").child(userID).child("InSession").setValue("False");
 
                                startBttn.setVisibility(View.VISIBLE);
                                startTxt.setVisibility(View.VISIBLE);
@@ -227,11 +239,6 @@ public class DrinkSessionFragment extends Fragment {
                                lv.setVisibility(View.GONE);
                                endBttn.setVisibility(View.GONE);
                            }
-
-                           @Override
-                           public void onCancelled(DatabaseError databaseError) {/*Do Nothing, mandatory to put here*/}
-                       });
-           }
         });
     }
 

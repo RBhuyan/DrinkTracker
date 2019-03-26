@@ -9,11 +9,15 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 
 public class AnalyticsFragment extends Fragment {
@@ -38,6 +42,24 @@ public class AnalyticsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        final Home home = (Home) getActivity();
+
+        testTxt = (TextView) getActivity().findViewById(R.id.temp_text);
+        testBttn = (Button) getActivity().findViewById(R.id.test_button);
+
+        testBttn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String gender = home.getGender();
+                int weight = home.getWeight();
+                ArrayList<Drink> tempList = home.getDrinkList();
+                Date dd = new Date();
+                Log.d("BAC", dd.toString());
+                Log.d("BAC", tempList.get(0).DateTime.toString());
+                double d = BACtracker.liveBacTracker(tempList, gender, weight, tempList.get(0).DateTime, dd);
+                testTxt.setText(Double.toString(d));
+            }
+        });
     }
 
 }
