@@ -10,16 +10,22 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.PointsGraphSeries;
+
+import java.util.ArrayList;
+import java.util.Date;
+
 
 
 public class AnalyticsFragment extends Fragment {
@@ -44,6 +50,7 @@ public class AnalyticsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
 
             GraphView graph = (GraphView) getActivity().findViewById(R.id.graph);
             PointsGraphSeries<DataPoint> series = new PointsGraphSeries<>(new DataPoint[] { // these points are a test will add more points after each session.
