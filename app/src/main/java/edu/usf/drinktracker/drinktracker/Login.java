@@ -1,10 +1,13 @@
 //basic login page that implements firebase authorization
 package edu.usf.drinktracker.drinktracker;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -37,9 +40,10 @@ public class Login extends AppCompatActivity {
     private DatabaseReference mDatabase;
     DatabaseReference ref;
     FirebaseAuth auth;
-    Button signinButton,signupButton;
+    Button signinButton,signupButton, forgotPass;
     EditText emailText,passwordText;
     List<User> users = new ArrayList<User>();
+    private String m_Text = "";
 
 
     @Override
@@ -55,6 +59,7 @@ public class Login extends AppCompatActivity {
         passwordText = (EditText) findViewById(R.id.passwordField);
         signinButton = (Button) findViewById(R.id.button);
         signupButton = (Button) findViewById(R.id.button3);
+        forgotPass = (Button) findViewById(R.id.forgot_pass);
 
         auth = FirebaseAuth.getInstance();
 
@@ -67,6 +72,52 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(Login.this, Signup.class));
+            }
+        });
+        forgotPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(Login.this);
+                builder.setTitle("Forgot Your Password?");
+                builder.setMessage("");
+
+
+                // Set up the input
+                final EditText input = new EditText(Login.this);
+                input.setPadding(85,0,0,30);
+                input.setHint("Email Address");
+                //input.setPadding(10,0,10,0);
+                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                builder.setView(input);
+
+                // Set up the buttons
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        m_Text = input.getText().toString();
+                        FirebaseAuth.getInstance().sendPasswordResetEmail(m_Text)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "Email sent.");
+                                            Toast.makeText(getApplicationContext(), "Password reset email sent! Check email for further instructions.", Toast.LENGTH_LONG).show();
+                                        }
+                                        else Toast.makeText(getApplicationContext(), "Invalid email.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
             }
         });
 

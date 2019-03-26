@@ -13,7 +13,7 @@
         android:layout_height="63dp"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="180dp"
+        android:layout_marginTop="156dp"
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/revalia"
         android:text="Drink Tracker"
@@ -30,7 +30,7 @@
         android:id="@+id/button"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="355dp"
-        android:layout_height="58dp"
+        android:layout_height="0dp"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
@@ -53,17 +53,16 @@
         android:layout_height="59dp"
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="172dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/drink_logo"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/textView" />
 
     <Button
         android:id="@+id/button3"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="350dp"
-        android:layout_height="59dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="24dp"
         android:fontFamily="sans-serif-smallcaps"
         android:text="Sign Up"
@@ -80,7 +79,7 @@
         android:layout_width="356dp"
         android:layout_height="62dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="76dp"
         android:layout_marginEnd="8dp"
         android:drawableStart="@android:drawable/sym_action_email"
         android:drawableLeft="@android:drawable/sym_action_email"
@@ -121,16 +120,33 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:fontFamily="sans-serif-light"
         android:text="Don't Have an Account?"
+        android:textAllCaps="false"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/button3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/forgot_pass"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="sans-serif-light"
+        android:text="Forgot Your Password?"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textColor="@color/colorAccent"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView6"
+        app:layout_constraintEnd_toEndOf="@+id/button"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="@+id/button"
         app:layout_constraintTop_toBottomOf="@+id/button"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>

@@ -14,14 +14,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-
+import android.widget.TimePicker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.Serializable;
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.lang.String;
+import java.lang.Object;
 
 public class NewDrink extends AppCompatActivity {
     EditText volume;
@@ -34,6 +37,9 @@ public class NewDrink extends AppCompatActivity {
     DatabaseReference mFirebaseDatabase;
     FirebaseAuth auth;
     String userID, gender;
+    int hour, min;
+
+    private TimePicker timePicker1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +62,14 @@ public class NewDrink extends AppCompatActivity {
         quantitySelecter = (Spinner) findViewById(R.id.quantity_options);
         volume = (EditText) findViewById(R.id.volume);
         button  = (Button) findViewById(R.id.add_drink);
+        timePicker1 = (TimePicker) findViewById(R.id.timePicker1);
+        hour = timePicker1.getCurrentHour();
+        min = timePicker1.getCurrentMinute();
+
+
+
+
+        /********/
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +80,12 @@ public class NewDrink extends AppCompatActivity {
                     Toast.makeText(NewDrink.this, "Please enter volume as a number", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
                 Date currentDate = new Date();
+                //Change current time to user's time
+                currentDate.setHours(hour);
+                currentDate.setMinutes(min);
+
                 //TODO: Make sure program does not crash if sessionNumber is invalid
                 Drink drink = new Drink(drinkSelecter.getSelectedItem().toString(), Double.parseDouble(volume.getText().toString()),
                         Integer.parseInt(quantitySelecter.getSelectedItem().toString()), currentDate, sessionNumber, userID );

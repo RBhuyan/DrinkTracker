@@ -7,6 +7,17 @@
     tools:context=".NewDrink">
 
 
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView4"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="377dp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="Time" />
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
@@ -18,12 +29,14 @@
 
     <Spinner
         android:id="@+id/drink_options"
-        android:layout_width="138dp"
+        android:layout_width="193dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="186dp"
-        android:layout_marginTop="116dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="184dp"
+        android:layout_marginTop="112dp"
+        android:layout_marginEnd="33dp"
         android:entries="@array/drink_options" />
 
     <TextView
@@ -32,18 +45,20 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/drink_options"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="77dp"
-        android:layout_marginBottom="-1dp"
+        android:layout_marginStart="42dp"
+        android:layout_marginBottom="3dp"
+        android:fontFamily="sans-serif-smallcaps"
         android:text="Drink Choice" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
+        android:layout_alignStart="@+id/textView5"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="103dp"
-        android:layout_marginTop="240dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="268dp"
+        android:fontFamily="sans-serif-smallcaps"
         android:text="Quantity" />
 
     <Spinner
@@ -52,18 +67,19 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/textView4"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="213dp"
-        android:layout_marginTop="-5dp"
+        android:layout_marginStart="246dp"
+        android:layout_marginTop="-2dp"
         android:entries="@array/quantity_options" />
 
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textView4"
+        android:layout_alignStart="@+id/textView3"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="-36dp"
-        android:layout_marginTop="173dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="194dp"
+        android:fontFamily="sans-serif-smallcaps"
         android:text="Volume (ounces)" />
 
     <EditText
@@ -71,8 +87,8 @@
         android:layout_width="121dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="51dp"
-        android:layout_marginTop="159dp"
+        android:layout_marginStart="118dp"
+        android:layout_marginTop="184dp"
         android:layout_toEndOf="@+id/textView3"
         android:ems="10"
         android:inputType="number|numberDecimal"
@@ -82,9 +98,31 @@
         android:id="@+id/add_drink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="170dp"
+        android:layout_marginStart="154dp"
+        android:layout_marginTop="501dp"
+        android:layout_marginEnd="161dp"
+        android:layout_marginBottom="182dp"
+        android:fontFamily="sans-serif-smallcaps"
         android:text="Add Drink" />
+
+    <TimePicker
+        android:id="@+id/timePicker1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="132dp"
+        android:layout_marginTop="342dp"
+        android:layout_marginEnd="34dp"
+        android:layout_marginBottom="295dp"
+
+        android:timePickerMode="spinner"
+        android:visibility="visible" />
 
 </RelativeLayout>

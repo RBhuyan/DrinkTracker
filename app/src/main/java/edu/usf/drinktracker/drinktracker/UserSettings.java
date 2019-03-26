@@ -42,10 +42,6 @@ public class UserSettings extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Displays the back nav arrow
 
-        changeAddressBttn = (Button) findViewById(R.id.change_address_bttn);
-        changeWeightBttn = (Button) findViewById(R.id.change_weight_bttn);
-        changeNameBttn = (Button) findViewById(R.id.change_name_bttn);
-        changeEmailBttn = (Button) findViewById(R.id.change_email_bttn);
         deleteAccountBttn = (Button) findViewById(R.id.delete_account_bttn);
         submitBttn = (Button) findViewById(R.id.submit_bttn);
 
@@ -85,7 +81,7 @@ public class UserSettings extends AppCompatActivity {
                     @Override
                     public void onCancelled(DatabaseError databaseError) {/*Do Nothing*/}
                 });
-        //Sets onClick listener for change name button
+ /*       //Sets onClick listener for change name button
         changeNameBttn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
                 if(!changeNameTxt.isClickable()){
@@ -127,12 +123,12 @@ public class UserSettings extends AppCompatActivity {
                 else
                     makeUnClickable(changeEmailTxt);
             }
-        });
+        });*/
         submitBttn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 sameData = true; // if any needs to be updated, change to false to trigger no info update toast
 
-                if(changeNameTxt.getText().toString() != name){
+                if(!changeNameTxt.getText().toString().equals(name)){
                     FirebaseDatabase.getInstance().getReference()
                             .child("users")
                             .child(userID)
@@ -140,7 +136,7 @@ public class UserSettings extends AppCompatActivity {
                     Toast.makeText(getApplication(), "Name updated successfully", Toast.LENGTH_LONG).show();
                     sameData = false;
                 }
-                if (changeWeightTxt.getText().toString() != weightTxt) {
+                if (!changeWeightTxt.getText().toString().equals(weightTxt)) {
                     FirebaseDatabase.getInstance().getReference()
                             .child("users")
                             .child(userID)
@@ -148,7 +144,7 @@ public class UserSettings extends AppCompatActivity {
                     Toast.makeText(getApplication(), "Weight updated successfully", Toast.LENGTH_LONG).show();
                     sameData = false;
                 }
-                if (changeAddressTxt.getText().toString() != address) {
+                if (!changeAddressTxt.getText().toString().equals(address)) {
                     FirebaseDatabase.getInstance().getReference()
                             .child("users")
                             .child(userID)
@@ -156,7 +152,7 @@ public class UserSettings extends AppCompatActivity {
                     Toast.makeText(getApplication(), "Address updated successfully", Toast.LENGTH_LONG).show();
                     sameData = false;
                 }
-                if(changeEmailTxt.getText().toString() != email){
+                if(!changeEmailTxt.getText().toString().equals(email)){
                      userFB = FirebaseAuth.getInstance().getCurrentUser();
                      userFB.updateEmail(email);
                     Toast.makeText(getApplication(), "Email updated successfully", Toast.LENGTH_LONG).show();
