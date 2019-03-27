@@ -47,6 +47,8 @@ public class LogHistoryFragment extends Fragment {
     private static final String TAG = "DRINKTAG";
     ListView lv;
     SessionAdapter adapter;
+    public static int weight;
+    public static String gender;
 
     public static LogHistoryFragment newInstance() {
         LogHistoryFragment fragment = new LogHistoryFragment();
@@ -73,6 +75,9 @@ public class LogHistoryFragment extends Fragment {
         user = user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
 
+        gender = home.getGender();
+        weight = home.getWeight();
+
         sessionMap = new HashMap<Integer, ArrayList<Drink>>();
         drinkList = home.getDrinkList();
         sessionList = new ArrayList<Session>();
@@ -80,8 +85,7 @@ public class LogHistoryFragment extends Fragment {
         for (Drink d : drinkList) {
             if (sessionMap.containsKey(d.SessionNumber)) {
                 sessionMap.get(d.SessionNumber).add(d);
-            }
-            else {
+            } else {
                 ArrayList<Drink> tempList = new ArrayList<Drink>();
                 tempList.add(d);
                 sessionMap.put(d.SessionNumber, tempList);
@@ -93,6 +97,8 @@ public class LogHistoryFragment extends Fragment {
 
         adapter = new SessionAdapter(getActivity(), sessionList);
         lv.setAdapter(adapter);
+    }
+
 
 
         /*
@@ -196,4 +202,4 @@ public class LogHistoryFragment extends Fragment {
         */
     }
 
-}
+
