@@ -7,19 +7,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+//This class is not saved to the firebase database
+//Just used as a struct for the RecyclerView in the SessionHistory section
 @IgnoreExtraProperties
 public class Session implements Serializable {
-    public int SessionNumber;
-    public Date Date;
     public ArrayList<Drink> DrinkList;
-
+    public int SessionNumber;
     public Session() {
         DrinkList = new ArrayList<Drink>();
     }
 
-    public Session(int sessionNumber, Date date, ArrayList<Drink> drinkList) {
+    public Session(int sessionNumber, ArrayList<Drink> drinkList) {
         this.SessionNumber = sessionNumber;
-        this.Date = date;
         this.DrinkList = drinkList;
     }
 

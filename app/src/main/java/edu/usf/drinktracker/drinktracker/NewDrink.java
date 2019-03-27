@@ -95,14 +95,12 @@ public class NewDrink extends AppCompatActivity {
                 mFirebaseDatabase = mFirebaseInstance.getReference("drinks");
                 mFirebaseInstance.getReference("app_title").setValue("Realtime Database");
 
-
-
-
                 String drinkKey = mFirebaseDatabase.push().getKey();
                 mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
                 mFirebaseDatabase.child("drinks").child(drinkKey).setValue(drink);
 
-                submit(drink);
+                Intent intent = new Intent(v.getContext(), Home.class);
+                startActivity(intent);
             }
         });
     }
@@ -116,12 +114,6 @@ public class NewDrink extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void submit(Drink drink){
-        Intent intent = new Intent(this, Home.class);
-        //intent.putExtra("drink", drink);
-        startActivity(intent);
     }
 
 

@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,10 @@ import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.PointsGraphSeries;
 
+import java.util.ArrayList;
+import java.util.Date;
+
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +40,6 @@ import java.util.Map;
 
 
 public class AnalyticsFragment extends Fragment {
-    private AnalyticsFragmentListener listener;
     TextView testTxt;
     Button testBttn;
     Button refresh;
@@ -67,7 +71,12 @@ public class AnalyticsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_analytics, container, false);
+
+
+        View v = inflater.inflate(R.layout.fragment_analytics, container, false);
+
+
+        return v;
     }
 
     @Override
@@ -80,113 +89,113 @@ public class AnalyticsFragment extends Fragment {
         avg_vol_val = (TextView) getActivity().findViewById(R.id.avg_vol_val);
         highest_vol_val = (TextView) getActivity().findViewById(R.id.highest_vol_val);
         refresh = (Button) getActivity().findViewById(R.id.refresh);
-
-
         GraphView graph = (GraphView) getActivity().findViewById(R.id.graph);
-            PointsGraphSeries<DataPoint> series = new PointsGraphSeries<>(new DataPoint[] { // these points are a test will add more points after each session.
-                    new DataPoint(1, .08),
-                    new DataPoint(2, .11),
-                    new DataPoint(3, .05)
-            });
-            graph.setTitle("Average BAC Per Session");
-            graph.setTitleTextSize(75);
-            graph.getGridLabelRenderer().setHorizontalAxisTitle("Sessions");
-            graph.getGridLabelRenderer().setPadding(60);
-            //graph.getGridLabelRenderer().setVerticalAxisTitle("BAC %");
-            graph.setBackgroundColor(Color.DKGRAY);
-            graph.getGridLabelRenderer().setHumanRounding(false, false);
-            graph.getGridLabelRenderer().setNumHorizontalLabels((int)series.getHighestValueX());
-            graph.getGridLabelRenderer().setNumVerticalLabels(6);
-            //graph.getSecondScale().setMinY(0.0);
-            //graph.getSecondScale().setMaxY(0.15);
-            graph.addSeries(series);
-            graph.getViewport().setXAxisBoundsManual(true);
-            graph.getViewport().setMaxX(series.getHighestValueX());
-            graph.getViewport().setYAxisBoundsManual(true);
-            graph.getViewport().setMaxY(0.15);
-            graph.getViewport().setMinY(0.0);
 
-            //add if more than 1 session make graph visible
+        PointsGraphSeries<DataPoint> series = new PointsGraphSeries<>(new DataPoint[]{ // these points are a test will add more points after each session.
+                new DataPoint(1, .08),
+                new DataPoint(2, .11),
+                new DataPoint(3, .05)
+        });
+        graph.setTitle("Average BAC Per Session");
+        graph.setTitleTextSize(75);
+        graph.getGridLabelRenderer().setHorizontalAxisTitle("Sessions");
+        graph.getGridLabelRenderer().setPadding(60);
 
-            //on data change for sessions, add new point for new session.
-        //refresh.setOnClickListener(new View.OnClickListener()
-        //{
-        //public void onClick(View v) {
-        FirebaseDatabase.getInstance().getReference()
-                .child("users")
-                .child(userID)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                        final String currGender = (String) map.get("Gender");
-                        final int currWeight = ((Long) map.get("Weight")).intValue();
-                        if (map.get("SessionNumber") == null)
-                            sessionNumber = 0;
-                        else
-                            sessionNumber = (((Long) map.get("SessionNumber")).intValue());
+        graph.setBackgroundColor(Color.DKGRAY);
+        graph.getGridLabelRenderer().setHumanRounding(false, false);
+        graph.getGridLabelRenderer().setNumHorizontalLabels((int) series.getHighestValueX());
+        graph.getGridLabelRenderer().setNumVerticalLabels(6);
 
+        graph.addSeries(series);
+        graph.getViewport().setXAxisBoundsManual(true);
+        graph.getViewport().setMaxX(series.getHighestValueX());
+        graph.getViewport().setYAxisBoundsManual(true);
+        graph.getViewport().setMaxY(0.15);
+        graph.getViewport().setMinY(0.0);
 
-                        final DatabaseReference drinks = FirebaseDatabase.getInstance().getReference().child("drinks");
-                        drinks.addListenerForSingleValueEvent(new ValueEventListener() {
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                avg_vol_val.setText("90");
+            }
+        });
+        //add if more than 1 session make graph visible
+
+        //on data change for sessions, add new point for new session.
+        /*refresh.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                FirebaseDatabase.getInstance().getReference()
+                        .child("users")
+                        .child(userID)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                            {
-                                drinkList = new ArrayList<>();
-                                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                    String drinkType = ds.child("DrinkType").getValue(String.class);
-                                    Double volume = ds.child("Volume").getValue(Double.class);
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                @SuppressWarnings("unchecked")
+                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                                final String currGender = (String) map.get("Gender");
+                                final int currWeight = ((Long) map.get("Weight")).intValue();
+                                if (map.get("SessionNumber") == null)
+                                    sessionNumber = 0;
+                                else
+                                    sessionNumber = (((Long) map.get("SessionNumber")).intValue());
 
-                                    totalVolume = totalVolume + volume;
 
-                                    Date drinkDate = ds.child("DateTime").getValue(Date.class);
+                                final DatabaseReference drinks = FirebaseDatabase.getInstance().getReference().child("drinks");
+                                drinks.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        drinkList = new ArrayList<>();
+                                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                            String drinkType = ds.child("DrinkType").getValue(String.class);
+                                            Double volume = ds.child("Volume").getValue(Double.class);
 
-                                    int quantity = ds.child("Quantity").getValue(int.class);
-                                    totalQuantity = totalQuantity + quantity;
+                                            totalVolume = totalVolume + volume;
 
-                                    int drinkSessionNumber = ds.child("SessionNumber").getValue(int.class);
-                                    String drinkUserID = ds.child("UserID").getValue(String.class);
-                                    if (drinkUserID.equals(userID))
-                                    {
-                                        drinkList.add(new Drink(drinkType, volume, quantity, drinkDate, drinkSessionNumber, userID));
+                                            Date drinkDate = ds.child("DateTime").getValue(Date.class);
+
+                                            int quantity = ds.child("Quantity").getValue(int.class);
+                                            totalQuantity = totalQuantity + quantity;
+
+                                            int drinkSessionNumber = ds.child("SessionNumber").getValue(int.class);
+                                            String drinkUserID = ds.child("UserID").getValue(String.class);
+                                            if (drinkUserID.equals(userID)) {
+                                                drinkList.add(new Drink(drinkType, volume, quantity, drinkDate, drinkSessionNumber, userID));
+                                            }
+                                        }
+                                        //Initialize highest volume consumed to the first drink
+                                        highestVolume = drinkList.get(0).Volume;
+
+                                        for (int i = 0; i < drinkList.size(); i++) {
+                                            Drink currentDrink = drinkList.get(i);
+
+
+                                            //Calculate total amount of drinks had by the user in all sessions
+                                            totalQuantity = totalQuantity + currentDrink.Quantity;
+
+                                            //Calculate total volume of alcohol consumed by the user in all sessions
+                                            totalVolume = totalVolume + (currentDrink.Quantity * currentDrink.Volume);
+
+                                            //Get highest volume consumed
+                                            if (currentDrink.Volume > highestVolume)
+                                                highestVolume = currentDrink.Volume;
+
+                                        }
+
+
                                     }
-                                }
-                                //Initialize highest volume consumed to the first drink
-                                highestVolume = drinkList.get(0).Volume;
 
-                                for(int i = 0; i < drinkList.size(); i++)
-                                {
-                                    Drink currentDrink = drinkList.get(i);
-
-
-                                    //Calculate total amount of drinks had by the user in all sessions
-                                    totalQuantity = totalQuantity + currentDrink.Quantity;
-
-                                    //Calculate total volume of alcohol consumed by the user in all sessions
-                                    totalVolume = totalVolume + (currentDrink.Quantity * currentDrink.Volume);
-
-                                    //Get highest volume consumed
-                                    if(currentDrink.Volume > highestVolume)
-                                        highestVolume = currentDrink.Volume;
-
-                                }
-
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    }
+                                });
 
                             }
 
                             @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            public void onCancelled(DatabaseError databaseError) {
                             }
                         });
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-        //Calculate average amount of drinks had by the user in all sessions
+                //Calculate average amount of drinks had by the user in all sessions
                                 /*int averageDrinks = totalQuantity/sessionNumber;
                                 avg_drinks_val.setText(averageDrinks);
                                 avg_drinks_val.setVisibility(View.VISIBLE);
@@ -199,11 +208,7 @@ public class AnalyticsFragment extends Fragment {
                                 //Highest Volume Consumed (Find max in the array of volumes)
                                 highest_vol_val.setText(highest_vol_val.toString());
                                 highest_vol_val.setVisibility(View.VISIBLE);*/
-    }
-    //});
-
-
-        }
-    //}
-
+            }};
+        //});
+  // }}
 

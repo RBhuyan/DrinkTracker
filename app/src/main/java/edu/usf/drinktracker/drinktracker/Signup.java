@@ -113,34 +113,40 @@ public class Signup extends AppCompatActivity {
                 final String gender = genderData;
                 final String address = addressData.getText().toString().trim();
                 final String weightTxt = weightData.getText().toString();
-                final int weight = Integer.parseInt(weightTxt);
 
-                //this is not working fun fact :)
-                if(TextUtils.isEmpty(name)){
-                    Toast.makeText(getApplicationContext(), "Enter name!", Toast.LENGTH_SHORT).show();
+
+                //this is working do not change
+                if(name.matches("")){
+                    nameData.setError("Name required.");
+                    //Toast.makeText(getApplicationContext(), "Enter name!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(TextUtils.isEmpty(address)){
-                    Toast.makeText(getApplicationContext(), "Enter address!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
+                if(address.matches("")){
+                    addressData.setError("Address Required");
+                    //Toast.makeText(getApplicationContext(), "Enter address!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
+                if (email.matches("")) {
+                    emailData.setError("Email Required.");
+                    //Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (password.matches("")) {
+                    passwordData.setError("Password Required.");
+                    //Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (password.length() < 6) {
-                    Toast.makeText(getApplicationContext(), "Password too short, enter minimum 6 characters!", Toast.LENGTH_SHORT).show();
+                    passwordData.setError("Password must be greater than 6 characters.");
+                    //Toast.makeText(getApplicationContext(), "Password too short, enter minimum 6 characters!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-
+                // Do not move this. It will crash the app if you put it will the other variables because it may not be initialized
+                final int weight = Integer.parseInt(weightTxt);
 
                 //Segment below is responsible for USER DATABASE CREATION
 
