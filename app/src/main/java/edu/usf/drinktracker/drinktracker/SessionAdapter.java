@@ -35,29 +35,15 @@ public class SessionAdapter extends ArrayAdapter<Session> {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.session_listview_layout, parent, false);
         }
-        Context cont = parent.getContext();
-        TextView title = (TextView) convertView.findViewById(R.id.drinkType);
-        TextView drinkType = (TextView) convertView.findViewById(R.id.drinkType);
-        TextView drinkVolume = (TextView) convertView.findViewById(R.id.drinkVolume);
-        TextView drinkQuantity = (TextView) convertView.findViewById(R.id.drinkQuantity);
+        TextView title = (TextView) convertView.findViewById(R.id.title);
         GraphView graph = (GraphView) convertView.findViewById(R.id.graph);
-        //ListView listView = (ListView) convertView.findViewById(R.id.drinks_list);
-        LinearLayout layout = (LinearLayout) convertView.findViewById(R.id.drinks_list_layout);
 
-        //adapter = new DrinkAdapter(cont, session.DrinkList);
-        layout.removeAllViews();
-        for (Drink d : session.DrinkList) {
-
-        }
-
-        //  todo: set up the graph!
         String cardTitle = "Session " + String.valueOf(session.SessionNumber);
         title.setText(cardTitle);
 
         HashMap<Integer, ArrayList<Drink>>sessionMap = new HashMap<Integer, ArrayList<Drink>>();
 
-        ArrayList<Drink> testingDrinks = session.DrinkList;
-        Collections.sort(testingDrinks, new Comparator<Drink>() { //sorts the drinkList by dateTime
+        Collections.sort(session.DrinkList, new Comparator<Drink>() { //sorts the drinkList by dateTime
             @Override
             public int compare(Drink r1, Drink r2) {
                 return r1.DateTime.compareTo(r2.DateTime);
@@ -65,9 +51,9 @@ public class SessionAdapter extends ArrayAdapter<Session> {
         });
         SimpleDateFormat format = new SimpleDateFormat("MM-dd-HH-m");
         int count = 0;
-        int listSize = testingDrinks.size();
+        int listSize = session.DrinkList.size();
         DataPoint[] dp = new DataPoint[listSize];
-        for (Drink d : testingDrinks) {
+        for (Drink d : session.DrinkList) {
             DataPoint dpp = new DataPoint(d.DateTime, count);
             dp[count] = dpp;
             count++;
@@ -76,12 +62,12 @@ public class SessionAdapter extends ArrayAdapter<Session> {
         graph.addSeries(series);
 
         // set date label formatter
-        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(cont, format));
+        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getContext(), format));
         graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
 
         // set manual x bounds to have nice steps
-        graph.getViewport().setMinX(testingDrinks.get(0).DateTime.getTime());
-        graph.getViewport().setMaxX(testingDrinks.get(listSize - 1).DateTime.getTime());
+        graph.getViewport().setMinX(session.DrinkList.get(0).DateTime.getTime());
+        graph.getViewport().setMaxX(session.DrinkList.get(listSize - 1).DateTime.getTime());
         graph.getViewport().setXAxisBoundsManual(true);
         graph.getGridLabelRenderer().setHumanRounding(false);
 

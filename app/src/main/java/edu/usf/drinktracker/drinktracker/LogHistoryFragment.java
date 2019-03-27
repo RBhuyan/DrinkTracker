@@ -69,11 +69,9 @@ public class LogHistoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Home home = (Home) getActivity();
         //graph = (GraphView) getActivity().findViewById(R.id.graph);
-        lv = (ListView) getActivity().findViewById(R.id.main_listview);
-
+        lv = (ListView) getActivity().findViewById(R.id.session_listview);
         user = user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
-
 
         sessionMap = new HashMap<Integer, ArrayList<Drink>>();
         drinkList = home.getDrinkList();
@@ -95,6 +93,8 @@ public class LogHistoryFragment extends Fragment {
 
         adapter = new SessionAdapter(getActivity(), sessionList);
         lv.setAdapter(adapter);
+
+
         /*
         ArrayList<Drink> testingDrinks = sessionList.get(0).DrinkList;
         Collections.sort(testingDrinks, new Comparator<Drink>() { //sorts the drinkList by dateTime

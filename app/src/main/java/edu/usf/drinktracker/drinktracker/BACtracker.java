@@ -17,35 +17,38 @@ public class BACtracker {
 
         double totalAlcoholConsumed = 0; //In grams
 
-        double alcPercent;
         double userConstant;
         for (Drink drink : drinkList) {
-            switch(drink.DrinkType) {  //Parses the user's drink type option into the average alcohol level for that kind of drink
-                case "Beer (4-8%)":
-                    alcPercent = 4.5/100; //We divide by 100 to get a percentage
-                    break;
-                case "Wine":
-                    alcPercent = 11.6/100;
-                    break;
-                case "Spirit":
-                    alcPercent = 40/100;
-                    break;
-                case "Liqueur":
-                    alcPercent = 22.5/100;
-                    break;
-                default:
-                    return -1; //Should NEVER reach here!
+            double alcPercent = 0;
+
+            if (drink.DrinkType.contains("Beer (4-8)%")) {
+                alcPercent = 4.5/100;
             }
-            totalAlcoholConsumed += (drink.Volume * alcPercent * 0.789);
+            else if (drink.DrinkType.contains("Wine")) {
+                alcPercent = 11.6/100;
+            }
+            else if (drink.DrinkType.contains("Hard Liquor")) {
+                alcPercent = 40/100;
+            }
+            else if (drink.DrinkType.contains("Spirits")) {
+                alcPercent = 22.5/100;
+            }
+            else if (alcPercent == 0) {
+                return -100;
+            }
+            totalAlcoholConsumed += (drink.Volume * alcPercent * 0.789 * 28.3945); //Remember unit conversion to grams
         }
         //Sets the gender constant
-        if (gender.equals("Male")){
+        System.out.println("Reached gender");
+        System.out.println(gender);
+        if (gender.equals("male")){
             userConstant = 0.68;
         }
         else {
             userConstant = 0.55;
         }
         int listLength = drinkList.size();
+        //System.out.println("Reached list lenth");
         long diffInMill = calcTime.getTime() - drinkList.get(0).DateTime.getTime(); //Difference between the user given current calc time and the first time inputted
         //1 hour = 3600000 ms, which is what diffInMill is calculated in
 

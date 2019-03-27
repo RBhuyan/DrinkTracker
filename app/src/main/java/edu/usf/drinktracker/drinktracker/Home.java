@@ -21,6 +21,7 @@ package edu.usf.drinktracker.drinktracker;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -57,7 +58,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class Home extends AppCompatActivity {
+public class Home extends AppCompatActivity{
     public ArrayList<Drink> drinkList;
     private TextView mTextMessage;
     android.support.v7.widget.Toolbar toolbar;
@@ -220,6 +221,8 @@ public class Home extends AppCompatActivity {
         return weight;
     }
 
+    public Location getLocation() {return mLastKnownLocation;}
+
     public void setGender(String g) { gender = g; }
 
     public void setWeight(int w) { weight = w; }
@@ -232,7 +235,7 @@ public class Home extends AppCompatActivity {
         return drinkList;
     }
 
-    public Location updateLocation() {
+    public void updateLocation() {
 
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -254,6 +257,5 @@ public class Home extends AppCompatActivity {
                         }
                     }
                 });
-    return mLastKnownLocation;
     }
 }

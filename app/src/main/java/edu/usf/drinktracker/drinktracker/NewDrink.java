@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.io.Serializable;
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.lang.String;
 import java.lang.Object;
@@ -63,11 +64,9 @@ public class NewDrink extends AppCompatActivity {
         volume = (EditText) findViewById(R.id.volume);
         button  = (Button) findViewById(R.id.add_drink);
         timePicker1 = (TimePicker) findViewById(R.id.timePicker1);
+        timePicker1.setIs24HourView(true);
         hour = timePicker1.getCurrentHour();
         min = timePicker1.getCurrentMinute();
-
-
-
 
         /********/
 
@@ -80,11 +79,17 @@ public class NewDrink extends AppCompatActivity {
                     Toast.makeText(NewDrink.this, "Please enter volume as a number", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                Calendar cal = Calendar.getInstance();
+                cal.set(Calendar.HOUR_OF_DAY,hour);
+                cal.set(Calendar.MINUTE,min);
+                cal.set(Calendar.SECOND,0);
+                cal.set(Calendar.MILLISECOND,0);
 
-                Date currentDate = new Date();
+                Date currentDate = cal.getTime();
+                //Date currentDate = new Date();
                 //Change current time to user's time
-                currentDate.setHours(hour);
-                currentDate.setMinutes(min);
+                //currentDate.setHours(hour);
+                //currentDate.setMinutes(min);
 
                 //TODO: Make sure program does not crash if sessionNumber is invalid
                 Drink drink = new Drink(drinkSelecter.getSelectedItem().toString(), Double.parseDouble(volume.getText().toString()),

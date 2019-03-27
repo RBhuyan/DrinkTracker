@@ -17,10 +17,12 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.util.Log;
@@ -37,6 +39,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -85,12 +91,19 @@ public class DrinkSessionFragment extends Fragment {
     private String m_Text = "";
     Date currDate, loggedDate;
     String drinkType;
+    Location loc;
     int volume, quantity;
     double homeLatitude, homeLongitude;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private int locationRequestCode = 1000;
     private double wayLatitude = 0.0, wayLongitude = 0.0;
-    public FusedLocationProviderClient mFusedLocationClient;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
+    private static final int DEFAULT_ZOOM = 15;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private boolean mLocationPermissionGranted;
+    private Location mLastKnownLocation;
+    private static final String KEY_LOCATION = "location";
 
     Double bac = 0.0;
 
@@ -122,10 +135,14 @@ public class DrinkSessionFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         //  testing intents
         final Home home = (Home) getActivity();
+        home.updateLocation();
 
+        if (savedInstanceState != null) {
+            mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+        }
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
         auth = FirebaseAuth.getInstance();
         userID = auth.getUid();
-
 
         lv = (ListView) getActivity().findViewById(R.id.drink_list);
         endBttn = (Button) getActivity().findViewById(R.id.end_session_bttn);
@@ -141,7 +158,6 @@ public class DrinkSessionFragment extends Fragment {
         fab.clearAnimation();
         fab.hide();
 
-
         refresh.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v) {
@@ -154,7 +170,13 @@ public class DrinkSessionFragment extends Fragment {
                                 @SuppressWarnings("unchecked")
                                 Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
                                 final String currGender = (String) map.get("Gender");
+                                System.out.println(currGender);
                                 final int currWeight = ((Long) map.get("Weight")).intValue();
+                                System.out.println(currWeight);
+                                gender = currGender;
+                                weight = currWeight;
+                                home.setGender(gender);
+                                home.setWeight(weight);
                                 if (map.get("SessionNumber") == null)
                                     sessionNumber = 0;
                                 else
@@ -189,7 +211,7 @@ public class DrinkSessionFragment extends Fragment {
                                         //W = a person’s weight in pounds
                                         //r = a gender constant of alcohol distribution (.73 for men and .66 for women)*
                                         //H = hours elapsed since drinking commenced
-
+                                        /*
                                         Double A =0.0;
                                         Double ouncesDrank = 0.0;
                                         int hoursAtFirstDrink = drinkList.get(0).DateTime.getHours();
@@ -221,15 +243,12 @@ public class DrinkSessionFragment extends Fragment {
                                             {
                                                 hoursAtFirstDrink = currentDrink.DateTime.getHours();
                                             }
-
-
                                         }
                                         Double r;
                                         if(currGender == "Female")
                                             r = 0.66;
                                         else
                                             r = 0.73;
-
 
                                         Date currDate = new Date();
                                         int currHour = currDate.getHours();
@@ -240,8 +259,15 @@ public class DrinkSessionFragment extends Fragment {
                                         DecimalFormat df2 = new DecimalFormat(".##");
                                         //df2.format(bac);
                                         //String bacText = bac.toString();
-                                        bacVal.setText(df2.format(bac));
+                                        //bacVal.setText(df2.format(bac));
+                                        */
+                                        /*
+                                        ArrayList<Drink> dList = home.getDrinkList();
+                                        Double currentBAC = BACtracker.liveBacTracker(dList, gender, weight, dList.get(0).DateTime, new Date());
+                                        bacVal.setText(String.valueOf(currentBAC));
+                                        Log.d("BACtesting", String.valueOf(currentBAC));
                                         bacVal.setVisibility(View.VISIBLE);
+                                        */
                                     }
 
                                     @Override
@@ -320,6 +346,15 @@ public class DrinkSessionFragment extends Fragment {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         @SuppressWarnings("unchecked")
                         Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                        if (map.get("Gender") == "male") {
+                            gender = "male";
+                        }
+                        else {
+                            gender = "female";
+                        }
+                        weight = ((Long) map.get("Weight")).intValue();
+                        home.setGender(gender);
+                        home.setWeight(weight);
                         if( map.get("SessionNumber") == null)
                             sessionNumber = 0;
                         else
@@ -352,6 +387,14 @@ public class DrinkSessionFragment extends Fragment {
                                     }
                                 }
                                 home.setDrinkList(totalDrinkList);
+                                gender = home.getGender();
+                                System.out.println(gender);
+                                weight = home.getWeight();
+                                ArrayList<Drink> dList = home.getDrinkList();
+                                int currSize = drinkList.size();
+                                Double currentBAC = BACtracker.liveBacTracker(drinkList, gender, weight, drinkList.get(currSize - 1).DateTime, new Date());
+                                bacVal.setText(String.valueOf(currentBAC));
+                                //Log.d("BACtesting", String.valueOf(currentBAC));
 
                                 adapter = new DrinkAdapter(getActivity(), drinkList);
                                 lv.setAdapter(adapter);
@@ -400,41 +443,42 @@ public class DrinkSessionFragment extends Fragment {
             }
         });
 
+
+
         //for uber shenanigans
         ride.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Location stuff
                 Geocoder geocoder = new Geocoder(getContext());
-                List<Address> addresses = null;
+                List<Address> addresses = new ArrayList<Address>();
                 try {
                     addresses = geocoder.getFromLocationName(address, 1);
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Toast.makeText(getActivity(), "The address you entered is invalid! Until you enter a valid address in the User Options you cannot use the Uber feature",
+                            Toast.LENGTH_LONG).show();
+                    return;
                 }
-                if(addresses != null) {
-                    homeLatitude= addresses.get(0).getLatitude();
-                    homeLongitude= addresses.get(0).getLongitude();
-                }
-                else{
+                if(addresses == null || addresses.size() == 0) {
                     homeLatitude= 28.056999; //if not valid address, set coords to USF
                     homeLongitude = -82.425987;
                 }
+                else{
+                    homeLatitude= addresses.get(0).getLatitude();
+                    homeLongitude= addresses.get(0).getLongitude();
+                }
                 //Current location
-                Location location = ((Home) getActivity()).updateLocation();
+                loc = home.getLocation();
+
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 builder.setTitle("\n");
-                // Set up the input
 
                 SessionConfiguration config = new SessionConfiguration.Builder()
-                        // mandatory
                         .setClientId("dKGoCOX5friZA3OIgcOFqh3714Er29oY")
-                        // required for enhanced button features
                         .setServerToken("_tKgfeqrktEJXFYJPvnD4BQeof9eiN1wGsnhKxA3")
-                        // required for implicit grant authentication
                         .setRedirectUri("DrinkTracker://oauth/callback")
-                        // optional: set sandbox as operating environment
                         .setEnvironment(SessionConfiguration.Environment.SANDBOX)
                         .build();
 
@@ -445,16 +489,13 @@ public class DrinkSessionFragment extends Fragment {
                 //layout.addView(requestButton);
 
                     RideParameters rideParams = new RideParameters.Builder()
-                            // Optional product_id from /v1/products endpoint (e.g. UberX). If not provided, most cost-efficient product will be used
-                            //.setProductId("a1111c8c-c720-46c3-8534-2fcdd730040d")
-                            // Required for price estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of dropoff location
                             .setDropoffLocation(
                                     homeLatitude, homeLongitude, "Home", address)
                             // Required for pickup estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of pickup location
-                            .setPickupLocation(location.getLatitude(), location.getLongitude(), "Current Location", "132 Valley Cir, Brandon, FL 33510")
+                            .setPickupLocation(loc.getLatitude(), loc.getLongitude(), "Current Location", "132 Valley Cir, Brandon, FL 33510")
 
                             .build();
-// set parameters for the RideRequestButton instance
+                    // set parameters for the RideRequestButton instance
                     requestButton.setRideParameters(rideParams);
 
                     ServerTokenSession session = new ServerTokenSession(config);
@@ -473,26 +514,11 @@ public class DrinkSessionFragment extends Fragment {
                 builder.show();
             }
         });
+
         //When the user ends a session
         endBttn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
-               /*
-               FirebaseDatabase.getInstance().getReference()
-                       .child("users")
-                       .child(userID)
-                       .addListenerForSingleValueEvent(new ValueEventListener() {
-                           @Override
-                           public void onDataChange(DataSnapshot dataSnapshot) {
-                               @SuppressWarnings("unchecked")
-                               Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                               FirebaseDatabase.getInstance().getReference()
-                                       .child("users")
-                                       .child(userID)
-                                       .child("InSession").setValue("False");
-                               //We increment the session number when a session is started so all we have to do is tell the database
-                               //the user is no longer in a session
-                               */
                                 FirebaseDatabase.getInstance().getReference().child("users").child(userID).child("InSession").setValue("False");
 
                                startBttn.setVisibility(View.VISIBLE);
@@ -519,6 +545,4 @@ public class DrinkSessionFragment extends Fragment {
         intent.putExtra("weight", weight);
         startActivity(intent);
     }
-
-
 }
