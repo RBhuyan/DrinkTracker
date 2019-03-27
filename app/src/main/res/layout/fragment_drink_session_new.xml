@@ -20,14 +20,6 @@
             android:src="@drawable/drink_session_logo"
             android:visibility="gone" />
 
-    <View
-        android:id="@+id/view2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        android:layout_alignTop="@+id/drink_list"
-        tools:layout_editor_absoluteX="0dp" />
     <ListView
         android:id="@+id/drink_list"
         android:layout_width="match_parent"
@@ -61,6 +53,15 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             android:textStyle="bold"
             android:visibility="gone" />
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignTop="@+id/drink_list"
+        android:background="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        tools:layout_editor_absoluteX="0dp" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

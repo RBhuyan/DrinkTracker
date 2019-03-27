@@ -1,54 +1,31 @@
-/*
-One of the fragments you can access with the bottom navigation bar.
-This fragment will allow users to open a new drinking session, and then add in drinks using the floating action button.
-The floating action button will open the NewDrink() activity, letting the user input a new drink.
-It should probably display a graph showing time of drinks for current session
-
-TODO: Implement NoSQL Firebase Database
-*/
 package edu.usf.drinktracker.drinktracker;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.uber.sdk.android.core.UberSdk;
-import com.uber.sdk.android.rides.RideParameters;
-import com.uber.sdk.android.rides.RideRequestButton;
-import com.uber.sdk.rides.client.ServerTokenSession;
-import com.uber.sdk.rides.client.SessionConfiguration;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EventListener;
 import java.util.Map;
 import java.text.DecimalFormat;
-
-import static com.firebase.ui.auth.ui.email.EmailLinkFragment.TAG;
 
 
 public class DrinkSessionFragment extends Fragment {
@@ -57,7 +34,7 @@ public class DrinkSessionFragment extends Fragment {
     ArrayList<Drink> drinkList = new ArrayList<Drink>();
     DrinkAdapter adapter;
     String strTest, userID, gender;
-    Button startBttn, endBttn, refresh, ride;
+    Button startBttn, endBttn, refresh;
     FirebaseAuth auth;
     TextView startTxt;
     int sessionNumber, weight;
@@ -67,11 +44,6 @@ public class DrinkSessionFragment extends Fragment {
     ProgressBar progress;
     ImageView drinkImg;
     TextView bacTxt, bacVal;
-    private String m_Text = "";
-    Date currDate, loggedDate;
-    String drinkType;
-    int volume, quantity;
-
     Double bac = 0.0;
 
 
@@ -99,6 +71,7 @@ public class DrinkSessionFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+
         super.onViewCreated(view, savedInstanceState);
         //  testing intents
         Home home = (Home) getActivity();
@@ -117,7 +90,6 @@ public class DrinkSessionFragment extends Fragment {
         progress = (ProgressBar) getActivity().findViewById(R.id.progress_circular);
         bacTxt = (TextView) getActivity().findViewById(R.id.bac_text);
         bacVal = (TextView) getActivity().findViewById(R.id.bac_value);
-        ride = (Button) getActivity().findViewById(R.id.ride);
         fab.clearAnimation();
         fab.hide();
 
@@ -250,10 +222,6 @@ public class DrinkSessionFragment extends Fragment {
                                 sessionNumber = (((Long) map.get("SessionNumber")).intValue()) + 1;
                                 gender = (String) map.get("Gender");
                                 weight = ((Long) map.get("Weight")).intValue();
-                                loggedDate = (Date) map.get("DateTime");
-                                drinkType = (String) map.get("DrinkType");
-                                //quantity = (int) map.get("Quantity");
-                                //volume = (int) map.get("Volume");
 
                                 //Sets the user's session number to +1 it's current value and sets In Current Session to be true
                                 FirebaseDatabase.getInstance().getReference()
@@ -264,15 +232,16 @@ public class DrinkSessionFragment extends Fragment {
                                         .child("users")
                                         .child(userID)
                                         .child("InSession").setValue("True");
+
+                                //VISIBILITIES
                                 progress.setVisibility(View.GONE);
                                 startBttn.setVisibility(View.GONE);
                                 startTxt.setVisibility(View.GONE);
                                 drinkImg.setVisibility(View.GONE);
-                                ride.setVisibility(View.VISIBLE);
                                 fab.show();
                                 lv.setVisibility(View.VISIBLE);
+                                //bacVal.setVisibility(View.VISIBLE);
                                 bacTxt.setVisibility(View.VISIBLE);
-                                bacVal.setVisibility(View.VISIBLE);
                                 endBttn.setVisibility(View.VISIBLE);
                                 refresh.setVisibility(View.VISIBLE);
                             }
@@ -330,9 +299,8 @@ public class DrinkSessionFragment extends Fragment {
                                     drinkImg.setVisibility((View.GONE));
                                     startBttn.setVisibility(View.GONE);
                                     fab.show();
-                                    ride.setVisibility(View.VISIBLE);
                                     lv.setVisibility(View.VISIBLE);
-                                    bacVal.setVisibility(View.VISIBLE);
+                                    //bacVal.setVisibility(View.VISIBLE);
                                     bacTxt.setVisibility(View.VISIBLE);
                                     endBttn.setVisibility(View.VISIBLE);
                                     refresh.setVisibility(View.VISIBLE);
@@ -342,10 +310,9 @@ public class DrinkSessionFragment extends Fragment {
                                     drinkImg.setVisibility(View.VISIBLE);
                                     startBttn.setVisibility(View.VISIBLE);
                                     fab.hide();
-                                    ride.setVisibility(View.VISIBLE);
                                     lv.setVisibility(View.GONE);
                                     bacTxt.setVisibility(View.GONE);
-                                    bacVal.setVisibility(View.GONE);
+                                    //bacVal.setVisibility(View.GONE);
                                     endBttn.setVisibility(View.GONE);
                                     refresh.setVisibility(View.GONE);
                                 }
@@ -368,96 +335,41 @@ public class DrinkSessionFragment extends Fragment {
             }
         });
 
-        //for uber shenanigans
-        ride.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                builder.setTitle("\n");
-                // Set up the input
-
-                SessionConfiguration config = new SessionConfiguration.Builder()
-                        // mandatory
-                        .setClientId("dKGoCOX5friZA3OIgcOFqh3714Er29oY")
-                        // required for enhanced button features
-                        .setServerToken("_tKgfeqrktEJXFYJPvnD4BQeof9eiN1wGsnhKxA3")
-                        // required for implicit grant authentication
-                        .setRedirectUri("DrinkTracker://oauth/callback")
-                        // optional: set sandbox as operating environment
-                        .setEnvironment(SessionConfiguration.Environment.SANDBOX)
-                        .build();
-
-                UberSdk.initialize(config);
-
-                RideRequestButton requestButton = new RideRequestButton(view.getContext());
-                //ConstraintLayout layout = (ConstraintLayout) getView();
-                //layout.addView(requestButton);
-
-                RideParameters rideParams = new RideParameters.Builder()
-                        // Optional product_id from /v1/products endpoint (e.g. UberX). If not provided, most cost-efficient product will be used
-                        .setProductId("a1111c8c-c720-46c3-8534-2fcdd730040d")
-                        // Required for price estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of dropoff location
-                        .setDropoffLocation(
-                                37.775304, -122.417522, "Uber HQ", "1455 Market Street, San Francisco")
-                        // Required for pickup estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of pickup location
-                        .setPickupLocation(37.775304, -122.417522, "Uber HQ", "1455 Market Street, San Francisco")
-                        .build();
-// set parameters for the RideRequestButton instance
-                requestButton.setRideParameters(rideParams);
-
-                ServerTokenSession session = new ServerTokenSession(config);
-                requestButton.setSession(session);
-                requestButton.loadRideInformation();
-
-                builder.setView(requestButton);
-
-                builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                builder.show();
-            }
-        });
         //When the user ends a session
         endBttn.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
-               FirebaseDatabase.getInstance().getReference()
-                       .child("users")
-                       .child(userID)
-                       .addListenerForSingleValueEvent(new ValueEventListener() {
-                           @Override
-                           public void onDataChange(DataSnapshot dataSnapshot) {
-                               @SuppressWarnings("unchecked")
-                               Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                               FirebaseDatabase.getInstance().getReference()
-                                       .child("users")
-                                       .child(userID)
-                                       .child("InSession").setValue("False");
-                               //We increment the session number when a session is started so all we have to do is tell the database
-                               //the user is no longer in a session
+            @Override
+            public void onClick(View view) {
+                FirebaseDatabase.getInstance().getReference()
+                        .child("users")
+                        .child(userID)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                @SuppressWarnings("unchecked")
+                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("users")
+                                        .child(userID)
+                                        .child("InSession").setValue("False");
+                                //We increment the session number when a session is started so all we have to do is tell the database
+                                //the user is no longer in a session
 
-                               startBttn.setVisibility(View.VISIBLE);
-                               startTxt.setVisibility(View.VISIBLE);
-                               drinkImg.setVisibility(View.VISIBLE);
-                               ride.setVisibility(View.VISIBLE);
-                               fab.hide();
-                               lv.setVisibility(View.GONE);
-                               lv.setAdapter(null);
-                               bacVal.setVisibility(View.GONE);
-                               bacTxt.setVisibility(View.GONE);
-                               endBttn.setVisibility(View.GONE);
-                               refresh.setVisibility(View.GONE);
-                           }
+                                startBttn.setVisibility(View.VISIBLE);
+                                startTxt.setVisibility(View.VISIBLE);
+                                drinkImg.setVisibility(View.VISIBLE);
+                                fab.hide();
+                                lv.setVisibility(View.GONE);
+                                lv.setAdapter(null);
+                                bacVal.setVisibility(View.GONE);
+                                bacTxt.setVisibility(View.GONE);
+                                endBttn.setVisibility(View.GONE);
+                                refresh.setVisibility(View.GONE);
+                            }
 
-                           @Override
-                           public void onCancelled(DatabaseError databaseError) {/*Do Nothing, mandatory to put here*/}
-                       });
-           }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {/*Do Nothing, mandatory to put here*/}
+                        });
+            }
         });
     }
 
