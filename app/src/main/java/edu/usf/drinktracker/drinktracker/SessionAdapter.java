@@ -29,7 +29,8 @@ import java.util.TreeMap;
 public class SessionAdapter extends ArrayAdapter<Session> {
     DrinkAdapter adapter;
     String gender;
-    int weight;
+    int weight, realSize;
+    DataPoint[] dp;
     public SessionAdapter(Context context, ArrayList<Session> sessions) {
         super(context, 0, sessions);
     }
@@ -44,7 +45,11 @@ public class SessionAdapter extends ArrayAdapter<Session> {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.session_listview_layout, parent, false);
         }
-
+        if (gender == null) {
+            //System.out.println("Gender is null");
+        }
+       // System.out.println("Gender is " + gender);
+        //System.out.println("Weight is " + weight);
         TextView title = (TextView) convertView.findViewById(R.id.title);
         GraphView graph = (GraphView) convertView.findViewById(R.id.graph);
 
@@ -59,22 +64,33 @@ public class SessionAdapter extends ArrayAdapter<Session> {
                 return r1.DateTime.compareTo(r2.DateTime);
             }
         });
-        SimpleDateFormat format = new SimpleDateFormat("MM-dd-HH-m");
+        SimpleDateFormat format = new SimpleDateFormat("dd-HH-m");
         int count = 0;
         int listSize = session.DrinkList.size();
-        DataPoint[] dp = new DataPoint[listSize];
-        //for (Drink d : session.DrinkList) {
-        //    DataPoint dpp = new DataPoint(d.DateTime, count);
-        //    dp[count] = dpp;
-        //    count++;
-        //}
+        if(!(listSize > 0)) {
+            try {
+                DataPoint[] dp = new DataPoint[1];
+                LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(dp);
+                graph.addSeries(series);
+            }
+            catch (Exception e) {
 
-        HashMap<Date, Double> returnPoints = BACtracker.sessionBacTracker(session.DrinkList, gender, weight);
-        Map<Date, Double> map = new TreeMap<Date, Double>(returnPoints);
-        for (Date d : map.keySet()) {
-            DataPoint dpp = new DataPoint(d, map.get(d));
-            dp[count] = dpp;
-            count++;
+            }
+        }
+        else {
+            Map<Date, Double> returnPoints = BACtracker.sessionBacTracker(session.DrinkList, gender, weight);
+            Map<Date, Double> map = new TreeMap<Date, Double>(returnPoints);
+            realSize = map.size();
+            dp = new DataPoint[realSize];
+            for (Date d : map.keySet()) {
+                DataPoint dpp = new DataPoint(d, map.get(d));
+                //System.out.println("*********  " + session.SessionNumber);
+                System.out.println("Drink number: " + count);
+                //System.out.println(d);
+                //System.out.println(map.get(d));
+                dp[count] = dpp;
+                count++;
+            }
         }
         try {
             LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(dp);
@@ -82,16 +98,16 @@ public class SessionAdapter extends ArrayAdapter<Session> {
 
             // set date label formatter
             graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getContext(), format));
-            graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
+            //graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
 
             // set manual x bounds to have nice steps
             graph.getViewport().setMinX(session.DrinkList.get(0).DateTime.getTime());
-            graph.getViewport().setMaxX(session.DrinkList.get(listSize - 1).DateTime.getTime());
+            graph.getViewport().setMaxX(session.DrinkList.get(realSize - 1).DateTime.getTime());
             graph.getViewport().setXAxisBoundsManual(true);
             graph.getGridLabelRenderer().setHumanRounding(false);
         }
         catch (Exception e) {
-
+            System.out.println(e);
         }
 
 

@@ -5,8 +5,12 @@ import android.util.Log;
 import com.google.api.client.util.DateTime;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class BACtracker {
 
@@ -39,8 +43,8 @@ public class BACtracker {
             totalAlcoholConsumed += (drink.Volume * alcPercent * 0.789 * 28.3945); //Remember unit conversion to grams
         }
         //Sets the gender constant
-        System.out.println("Reached gender");
-        System.out.println(gender);
+        //System.out.println("Reached gender");
+        //System.out.println(gender);
         if (gender.equals("male")){
             userConstant = 0.68;
         }
@@ -55,24 +59,35 @@ public class BACtracker {
         return ( ((totalAlcoholConsumed * 100)/(weight * 454 * userConstant)) - ((diffInMill * 0.015 / 3600000)) ); //final formula!
     }
 
-    public static HashMap<Date, Double> sessionBacTracker(ArrayList<Drink> drinkList, String gender, int weight) {
+    public static Map<Date, Double> sessionBacTracker(ArrayList<Drink> drinkList, String gender, int weight) {
         int listLength = drinkList.size();
+        System.out.println("list length is " + listLength);
         long diffInMill = Math.abs(drinkList.get(listLength - 1).DateTime.getTime() - drinkList.get(0).DateTime.getTime()); //Difference between the user given current calc time and the first time inputted
         //1 hour = 3600000 ms, which is what diffInMill is calculated in
+        long expire = 60000l;
         HashMap<Date, Double> graphPoints = new HashMap<Date, Double>();
+        Map<Date, Double> map = new TreeMap<Date, Double>(graphPoints);
         Date startDay = drinkList.get(0).DateTime;
         boolean first = true;
         for (Drink d : drinkList) {
+            //System.out.println(d.DateTime);
             if (first) {
-                graphPoints.put(startDay, 0.0);
+                map.put(startDay, 0.0);
                 first = false;
             }
             else {
                 Double dd = liveBacTracker(drinkList, gender, weight, startDay, d.DateTime);
-                graphPoints.put(d.DateTime, dd);
+                if (map.containsKey(d.DateTime)) {
+                    Date ddd = new Date(d.DateTime.getTime() + expire);
+                    map.put(ddd, dd);
+                }
+                else {
+                    map.put(d.DateTime, dd);
+                }
             }
         }
-        return graphPoints;
+        //System.out.println(map);
+        return map;
     }
 
 }

@@ -92,7 +92,9 @@ public class LogHistoryFragment extends Fragment {
             }
         }
         for (Integer i : sessionMap.keySet()) {
-            sessionList.add(new Session(i, sessionMap.get(i)));
+            if(sessionMap.get(i).size() > 1) {
+                sessionList.add(new Session(i, sessionMap.get(i)));
+            }
         }
 
         adapter = new SessionAdapter(getActivity(), sessionList);

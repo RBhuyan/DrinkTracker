@@ -158,130 +158,7 @@ public class DrinkSessionFragment extends Fragment {
         fab.clearAnimation();
         fab.hide();
 
-        refresh.setOnClickListener(new View.OnClickListener()
-        {
-            public void onClick(View v) {
-                FirebaseDatabase.getInstance().getReference()
-                        .child("users")
-                        .child(userID)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                @SuppressWarnings("unchecked")
-                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                final String currGender = (String) map.get("Gender");
-                                System.out.println(currGender);
-                                final int currWeight = ((Long) map.get("Weight")).intValue();
-                                System.out.println(currWeight);
-                                gender = currGender;
-                                weight = currWeight;
-                                home.setGender(gender);
-                                home.setWeight(weight);
-                                if (map.get("SessionNumber") == null)
-                                    sessionNumber = 0;
-                                else
-                                    sessionNumber = (((Long) map.get("SessionNumber")).intValue());
-                                if (map.get("InSession").equals(null))
-                                    inSession = "false";
-                                else
-                                    inSession = map.get("InSession").equals("True") ? "True" : "False";
 
-
-                                final DatabaseReference drinks = FirebaseDatabase.getInstance().getReference().child("drinks");
-                                drinks.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                                    {
-                                        drinkList = new ArrayList<>();
-                                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                            String drinkType = ds.child("DrinkType").getValue(String.class);
-                                            Double volume = ds.child("Volume").getValue(Double.class);
-                                            Date drinkDate = ds.child("DateTime").getValue(Date.class);
-                                            int quantity = ds.child("Quantity").getValue(int.class);
-                                            int drinkSessionNumber = ds.child("SessionNumber").getValue(int.class);
-                                            String drinkUserID = ds.child("UserID").getValue(String.class);
-                                            if (drinkSessionNumber == sessionNumber && drinkUserID.equals(userID)) {
-                                                drinkList.add(new Drink(drinkType, volume, quantity, drinkDate, drinkSessionNumber, userID));
-                                            }
-                                        }
-
-                                        //Calculate BAC
-                                        //% BAC = (A x 5.14 / W x r) – .015 x H
-                                        //A = liquid ounces of alcohol consumed
-                                        //W = a person’s weight in pounds
-                                        //r = a gender constant of alcohol distribution (.73 for men and .66 for women)*
-                                        //H = hours elapsed since drinking commenced
-                                        /*
-                                        Double A =0.0;
-                                        Double ouncesDrank = 0.0;
-                                        int hoursAtFirstDrink = drinkList.get(0).DateTime.getHours();
-
-                                        for(int i = 0; i < drinkList.size(); i++)
-                                        {
-                                            //Get total ounces of alcohol consumed
-                                            Drink currentDrink = drinkList.get(i);
-                                            ouncesDrank = currentDrink.Volume * currentDrink.Quantity;
-
-                                            //Get alcohol content
-                                            if(currentDrink.DrinkType.contains("Beer"))
-                                            {
-                                                A = A + (ouncesDrank * 0.05);
-                                            }
-                                            if(currentDrink.DrinkType.contains("Wine"))
-                                            {
-                                                A = A + (ouncesDrank * 0.12);
-                                            }
-                                            if(currentDrink.DrinkType.contains("Hard Liquor"))
-                                            {
-                                                A = A + (ouncesDrank * 0.4);
-                                            }
-                                            if(currentDrink.DrinkType.contains("Spirits"))
-                                            {
-                                                A = A + (ouncesDrank * 0.15);
-                                            }
-                                            if(currentDrink.DateTime.getHours() < hoursAtFirstDrink)
-                                            {
-                                                hoursAtFirstDrink = currentDrink.DateTime.getHours();
-                                            }
-                                        }
-                                        Double r;
-                                        if(currGender == "Female")
-                                            r = 0.66;
-                                        else
-                                            r = 0.73;
-
-                                        Date currDate = new Date();
-                                        int currHour = currDate.getHours();
-
-                                        int H = currHour - hoursAtFirstDrink;
-
-                                        bac = (A * 5.14)/(currWeight * r) - (0.015 * H);
-                                        DecimalFormat df2 = new DecimalFormat(".##");
-                                        //df2.format(bac);
-                                        //String bacText = bac.toString();
-                                        //bacVal.setText(df2.format(bac));
-                                        */
-                                        /*
-                                        ArrayList<Drink> dList = home.getDrinkList();
-                                        Double currentBAC = BACtracker.liveBacTracker(dList, gender, weight, dList.get(0).DateTime, new Date());
-                                        bacVal.setText(String.valueOf(currentBAC));
-                                        Log.d("BACtesting", String.valueOf(currentBAC));
-                                        bacVal.setVisibility(View.VISIBLE);
-                                        */
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                            }
-                        });
-            }
-        });
         //OH NO
         startBttn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -299,10 +176,6 @@ public class DrinkSessionFragment extends Fragment {
 
                                 loggedDate = (Date) map.get("DateTime");
                                 drinkType = (String) map.get("DrinkType");
-                                //quantity = (int) map.get("Quantity");
-                                //volume = (int) map.get("Volume");
-
-
 
                                 home.setGender(gender);
                                 home.setWeight(weight);
@@ -392,9 +265,11 @@ public class DrinkSessionFragment extends Fragment {
                                 weight = home.getWeight();
                                 ArrayList<Drink> dList = home.getDrinkList();
                                 int currSize = drinkList.size();
-                                Double currentBAC = BACtracker.liveBacTracker(drinkList, gender, weight, drinkList.get(currSize - 1).DateTime, new Date());
+                                Double currentBAC = 0.0;
+                                if (currSize > 0) {
+                                    currentBAC = BACtracker.liveBacTracker(drinkList, gender, weight, drinkList.get(currSize - 1).DateTime, new Date());
+                                }
                                 bacVal.setText(String.valueOf(currentBAC));
-                                //Log.d("BACtesting", String.valueOf(currentBAC));
 
                                 adapter = new DrinkAdapter(getActivity(), drinkList);
                                 lv.setAdapter(adapter);
@@ -440,6 +315,16 @@ public class DrinkSessionFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 newDrinkMenu();
+            }
+        });
+
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<Drink> dList = home.getDrinkList();
+                int currSize = drinkList.size();
+                Double currentBAC = BACtracker.liveBacTracker(drinkList, gender, weight, drinkList.get(currSize - 1).DateTime, new Date());
+                bacVal.setText(String.valueOf(currentBAC));
             }
         });
 
@@ -520,7 +405,7 @@ public class DrinkSessionFragment extends Fragment {
            @Override
            public void onClick(View view) {
                                 FirebaseDatabase.getInstance().getReference().child("users").child(userID).child("InSession").setValue("False");
-
+                                home.setDrinkList(new ArrayList<Drink>());
                                startBttn.setVisibility(View.VISIBLE);
                                startTxt.setVisibility(View.VISIBLE);
                                drinkImg.setVisibility(View.VISIBLE);
