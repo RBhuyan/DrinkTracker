@@ -67,6 +67,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.text.DecimalFormat;
 import java.util.concurrent.Executor;
+import edu.usf.drinktracker.drinktracker.R;
 
 import static com.firebase.ui.auth.ui.email.EmailLinkFragment.TAG;
 
@@ -77,8 +78,10 @@ public class DrinkSessionFragment extends Fragment {
     ArrayList<Drink> drinkList = new ArrayList<Drink>();
     ArrayList<Drink> totalDrinkList = new ArrayList<Drink>();
     DrinkAdapter adapter;
-    String strTest, userID, gender, address;
+    String strTest, userID, gender;
     Button startBttn, endBttn, refresh, ride;
+    //String strTest, userID, gender, address;
+    //Button startBttn, endBttn, refresh, ride;
     FirebaseAuth auth;
     TextView startTxt;
     int sessionNumber, weight;
@@ -90,13 +93,17 @@ public class DrinkSessionFragment extends Fragment {
     TextView bacTxt, bacVal;
     private String m_Text = "";
     Date currDate, loggedDate;
-    String drinkType;
+    String drinkType, address;
     Location loc;
     int volume, quantity;
     double homeLatitude, homeLongitude;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private int locationRequestCode = 1000;
     private double wayLatitude = 0.0, wayLongitude = 0.0;
+
+    public FusedLocationProviderClient mFusedLocationClient;
+    Double totalQuantity, totalVolume, highestVolume;
+
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
     private static final int DEFAULT_ZOOM = 15;
@@ -105,8 +112,17 @@ public class DrinkSessionFragment extends Fragment {
     private Location mLastKnownLocation;
     private static final String KEY_LOCATION = "location";
 
+
     Double bac = 0.0;
 
+    public void newDrinkMenu() {
+        Intent intent = new Intent(getContext(), NewDrink.class);
+        intent.putExtra("sessionNumber", sessionNumber);
+        intent.putExtra("userID", userID);
+        intent.putExtra("gender", gender);
+        intent.putExtra("weight", weight);
+        startActivity(intent);
+    }
 
     //TODO: update the toggles of the in session/out of session
     //Initializes fragment
@@ -115,7 +131,7 @@ public class DrinkSessionFragment extends Fragment {
         return fragment;
     }
 
-    public void setCustomObject(Drink object){
+    public void setCustomObject(Drink object) {
         this.mDrink = object;
     }
 
@@ -147,18 +163,17 @@ public class DrinkSessionFragment extends Fragment {
         lv = (ListView) getActivity().findViewById(R.id.drink_list);
         endBttn = (Button) getActivity().findViewById(R.id.end_session_bttn);
         fab = getActivity().findViewById(R.id.fab);
-        drinkImg = (ImageView) getActivity().findViewById(R.id.truiton_image);
-        startBttn = (Button) getActivity().findViewById(R.id.start_new_session);
-        refresh = (Button) getActivity().findViewById(R.id.refresh);
-        startTxt = (TextView) getActivity().findViewById(R.id.new_session_txt);
-        progress = (ProgressBar) getActivity().findViewById(R.id.progress_circular);
-        bacTxt = (TextView) getActivity().findViewById(R.id.bac_text);
-        bacVal = (TextView) getActivity().findViewById(R.id.bac_value);
-        ride = (Button) getActivity().findViewById(R.id.ride);
+        drinkImg = getActivity().findViewById(R.id.truiton_image);
+        startBttn = getActivity().findViewById(R.id.start_new_session);
+        refresh = getActivity().findViewById(R.id.refresh);
+        startTxt = getActivity().findViewById(R.id.new_session_txt);
+        progress = getActivity().findViewById(R.id.progress_circular);
+        bacTxt = getActivity().findViewById(R.id.bac_text);
+        bacVal = getActivity().findViewById(R.id.bac_value);
+        ride = getActivity().findViewById(R.id.ride);
         fab.clearAnimation();
         fab.hide();
-
-
+      
         //OH NO
         startBttn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -179,7 +194,7 @@ public class DrinkSessionFragment extends Fragment {
 
                                 home.setGender(gender);
                                 home.setWeight(weight);
-                              
+
 
                                 //Sets the user's session number to +1 it's current value and sets In Current Session to be true
                                 FirebaseDatabase.getInstance().getReference()
@@ -190,6 +205,8 @@ public class DrinkSessionFragment extends Fragment {
                                         .child("users")
                                         .child(userID)
                                         .child("InSession").setValue("True");
+
+                                //VISIBILITIES
                                 progress.setVisibility(View.GONE);
                                 startBttn.setVisibility(View.GONE);
                                 startTxt.setVisibility(View.GONE);
@@ -208,9 +225,6 @@ public class DrinkSessionFragment extends Fragment {
                         });
             }
         });
-
-
-
         FirebaseDatabase.getInstance().getReference()
                 .child("users")
                 .child(userID)
@@ -219,6 +233,7 @@ public class DrinkSessionFragment extends Fragment {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         @SuppressWarnings("unchecked")
                         Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+
                         if (map.get("Gender") == "male") {
                             gender = "male";
                         }
@@ -228,29 +243,31 @@ public class DrinkSessionFragment extends Fragment {
                         weight = ((Long) map.get("Weight")).intValue();
                         home.setGender(gender);
                         home.setWeight(weight);
-                        if( map.get("SessionNumber") == null)
+                        if( map.get("SessionNumber") == null) {
                             sessionNumber = 0;
-                        else
+                        }
+                        else {
                             sessionNumber = (((Long) map.get("SessionNumber")).intValue());
-                        if(map.get("InSession").equals(null))
+                        }
+                        if (map.get("InSession").equals(null))
                             inSession = "false";
                         else
-                            inSession = map.get("InSession").equals("True")?"True":"False";
+                            inSession = map.get("InSession").equals("True") ? "True" : "False";
                         //sessionNumber = 1;
                         //inSession = "false";
-                            address = map.get("Address").toString();
-                        DatabaseReference  drinkRef = FirebaseDatabase.getInstance().getReference().child("drinks");
+                        address = map.get("Address").toString();
+                        DatabaseReference drinkRef = FirebaseDatabase.getInstance().getReference().child("drinks");
                         drinkRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 drinkList = new ArrayList<>();
                                 totalDrinkList = new ArrayList<>();
-                                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                                     String drinkType = ds.child("DrinkType").getValue(String.class);
                                     Double volume = ds.child("Volume").getValue(Double.class);
                                     Date drinkDate = ds.child("DateTime").getValue(Date.class);
                                     int quantity = ds.child("Quantity").getValue(int.class);
-                                    int drinkSessionNumber =  ds.child("SessionNumber").getValue(int.class);
+                                    int drinkSessionNumber = ds.child("SessionNumber").getValue(int.class);
                                     String drinkUserID = ds.child("UserID").getValue(String.class);
                                     if (drinkUserID.equals(userID)) {
                                         totalDrinkList.add(new Drink(drinkType, volume, quantity, drinkDate, drinkSessionNumber, userID));
@@ -286,8 +303,7 @@ public class DrinkSessionFragment extends Fragment {
                                     bacTxt.setVisibility(View.VISIBLE);
                                     endBttn.setVisibility(View.VISIBLE);
                                     refresh.setVisibility(View.VISIBLE);
-                                }
-                                else {
+                                } else {
                                     startTxt.setVisibility(View.VISIBLE);
                                     drinkImg.setVisibility(View.VISIBLE);
                                     startBttn.setVisibility(View.VISIBLE);
@@ -302,11 +318,14 @@ public class DrinkSessionFragment extends Fragment {
                             }
 
                             @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {}
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            }
                         });
                     }
+
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {}
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
                 });
 
 
@@ -345,8 +364,12 @@ public class DrinkSessionFragment extends Fragment {
                             Toast.LENGTH_LONG).show();
                     return;
                 }
-                if(addresses == null || addresses.size() == 0) {
-                    homeLatitude= 28.056999; //if not valid address, set coords to USF
+              
+                if (addresses != null || adresses.size() == 0) {
+                    homeLatitude = addresses.get(0).getLatitude();
+                    homeLongitude = addresses.get(0).getLongitude();
+                } else {
+                    homeLatitude = 28.056999; //if not valid address, set coords to USF
                     homeLongitude = -82.425987;
                 }
                 else{
@@ -373,19 +396,22 @@ public class DrinkSessionFragment extends Fragment {
                 //ConstraintLayout layout = (ConstraintLayout) getView();
                 //layout.addView(requestButton);
 
-                    RideParameters rideParams = new RideParameters.Builder()
-                            .setDropoffLocation(
-                                    homeLatitude, homeLongitude, "Home", address)
-                            // Required for pickup estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of pickup location
-                            .setPickupLocation(loc.getLatitude(), loc.getLongitude(), "Current Location", "132 Valley Cir, Brandon, FL 33510")
+                RideParameters rideParams = new RideParameters.Builder()
+                        // Optional product_id from /v1/products endpoint (e.g. UberX). If not provided, most cost-efficient product will be used
+                        //.setProductId("a1111c8c-c720-46c3-8534-2fcdd730040d")
+                        // Required for price estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of dropoff location
+                        .setDropoffLocation(
+                                homeLatitude, homeLongitude, "Home", address)
+                        // Required for pickup estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of pickup location
+                        .setPickupLocation(location.getLatitude(), location.getLongitude(), "Current Location", "132 Valley Cir, Brandon, FL 33510")
 
-                            .build();
-                    // set parameters for the RideRequestButton instance
-                    requestButton.setRideParameters(rideParams);
+                        .build();
+                // set parameters for the RideRequestButton instance
+                requestButton.setRideParameters(rideParams);
 
-                    ServerTokenSession session = new ServerTokenSession(config);
-                    requestButton.setSession(session);
-                    requestButton.loadRideInformation();
+                ServerTokenSession session = new ServerTokenSession(config);
+                requestButton.setSession(session);
+                requestButton.loadRideInformation();
 
                 builder.setView(requestButton);
 
@@ -419,15 +445,5 @@ public class DrinkSessionFragment extends Fragment {
                                refresh.setVisibility(View.GONE);
                            }
         });
-
-    }
-
-    private void newDrinkMenu() {
-        Intent intent = new Intent(getContext(), NewDrink.class);
-        intent.putExtra("sessionNumber", sessionNumber);
-        intent.putExtra("userID", userID);
-        intent.putExtra("gender", gender);
-        intent.putExtra("weight", weight);
-        startActivity(intent);
     }
 }

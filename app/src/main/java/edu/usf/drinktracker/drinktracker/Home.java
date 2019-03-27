@@ -37,7 +37,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -58,6 +57,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Map;
 
+
 public class Home extends AppCompatActivity{
     public ArrayList<Drink> drinkList;
     private TextView mTextMessage;
@@ -74,6 +74,7 @@ public class Home extends AppCompatActivity{
     private boolean mLocationPermissionGranted;
     Location mLastKnownLocation;
     private FusedLocationProviderClient fusedLocationClient;
+    //int sessionNumber;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
