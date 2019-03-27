@@ -17,10 +17,12 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.util.Log;
@@ -37,6 +39,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -88,13 +94,24 @@ public class DrinkSessionFragment extends Fragment {
     private String m_Text = "";
     Date currDate, loggedDate;
     String drinkType, address;
+    Location loc;
     int volume, quantity;
     double homeLatitude, homeLongitude;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private int locationRequestCode = 1000;
     private double wayLatitude = 0.0, wayLongitude = 0.0;
+
     public FusedLocationProviderClient mFusedLocationClient;
     Double totalQuantity, totalVolume, highestVolume;
+
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
+    private static final int DEFAULT_ZOOM = 15;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private boolean mLocationPermissionGranted;
+    private Location mLastKnownLocation;
+    private static final String KEY_LOCATION = "location";
+
 
     Double bac = 0.0;
 
@@ -134,13 +151,17 @@ public class DrinkSessionFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         //  testing intents
         final Home home = (Home) getActivity();
+        home.updateLocation();
 
+        if (savedInstanceState != null) {
+            mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+        }
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
         auth = FirebaseAuth.getInstance();
         userID = auth.getUid();
 
-
-        lv = getActivity().findViewById(R.id.drink_list);
-        endBttn = getActivity().findViewById(R.id.end_session_bttn);
+        lv = (ListView) getActivity().findViewById(R.id.drink_list);
+        endBttn = (Button) getActivity().findViewById(R.id.end_session_bttn);
         fab = getActivity().findViewById(R.id.fab);
         drinkImg = getActivity().findViewById(R.id.truiton_image);
         startBttn = getActivity().findViewById(R.id.start_new_session);
@@ -152,127 +173,7 @@ public class DrinkSessionFragment extends Fragment {
         ride = getActivity().findViewById(R.id.ride);
         fab.clearAnimation();
         fab.hide();
-
-
-        refresh.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                //Globals var = getInstance();
-                FirebaseDatabase.getInstance().getReference()
-                        .child("users")
-                        .child(userID)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                @SuppressWarnings("unchecked")
-                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                final String currGender = (String) map.get("Gender");
-                                final int currWeight = ((Long) map.get("Weight")).intValue();
-                                if (map.get("SessionNumber") == null)
-                                    sessionNumber = 0;
-                                else
-                                    sessionNumber = (((Long) map.get("SessionNumber")).intValue());
-                                if (map.get("InSession").equals(null))
-                                    inSession = "false";
-                                else
-                                    inSession = map.get("InSession").equals("True") ? "True" : "False";
-
-
-                                final DatabaseReference drinks = FirebaseDatabase.getInstance().getReference().child("drinks");
-                                drinks.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        drinkList = new ArrayList<>();
-                                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                            String drinkType = ds.child("DrinkType").getValue(String.class);
-                                            Double volume = ds.child("Volume").getValue(Double.class);
-                                            Date drinkDate = ds.child("DateTime").getValue(Date.class);
-                                            int quantity = ds.child("Quantity").getValue(int.class);
-                                            int drinkSessionNumber = ds.child("SessionNumber").getValue(int.class);
-                                            String drinkUserID = ds.child("UserID").getValue(String.class);
-                                            if (drinkSessionNumber == sessionNumber && drinkUserID.equals(userID)) {
-                                                drinkList.add(new Drink(drinkType, volume, quantity, drinkDate, drinkSessionNumber, userID));
-                                            }
-                                        }
-
-                                        //Calculate BAC
-                                        //% BAC = (A x 5.14 / W x r) – .015 x H
-                                        //A = liquid ounces of alcohol consumed
-                                        //W = a person’s weight in pounds
-                                        //r = a gender constant of alcohol distribution (.73 for men and .66 for women)*
-                                        //H = hours elapsed since drinking commenced
-
-                                        Double A = 0.0;
-                                        Double ouncesDrank = 0.0;
-                                        int hoursAtFirstDrink = drinkList.get(0).DateTime.getHours();
-
-                                        for (int i = 0; i < drinkList.size(); i++) {
-                                            //Get total ounces of alcohol consumed
-                                            Drink currentDrink = drinkList.get(i);
-                                            ouncesDrank = currentDrink.Volume * currentDrink.Quantity;
-
-                                            //Calculate total amount of drinks had by the user in all sessions
-                                            totalQuantity = totalQuantity + currentDrink.Quantity;
-
-                                            //Calculate total volume of alcohol consumed by the user in all sessions
-                                            totalVolume = totalVolume + (currentDrink.Quantity * currentDrink.Volume);
-
-                                            //Get highest volume consumed
-                                            if (currentDrink.Volume > highestVolume)
-                                                highestVolume = currentDrink.Volume;
-
-                                            //Get alcohol content
-                                            if (currentDrink.DrinkType.contains("Beer")) {
-                                                A = A + (ouncesDrank * 0.05);
-                                            }
-                                            if (currentDrink.DrinkType.contains("Wine")) {
-                                                A = A + (ouncesDrank * 0.12);
-                                            }
-                                            if (currentDrink.DrinkType.contains("Hard Liquor")) {
-                                                A = A + (ouncesDrank * 0.4);
-                                            }
-                                            if (currentDrink.DrinkType.contains("Spirits")) {
-                                                A = A + (ouncesDrank * 0.15);
-                                            }
-                                            if (currentDrink.DateTime.getHours() < hoursAtFirstDrink) {
-                                                hoursAtFirstDrink = currentDrink.DateTime.getHours();
-                                            }
-
-
-                                        }
-
-
-                                        Double r;
-                                        if (currGender == "Female")
-                                            r = 0.66;
-                                        else
-                                            r = 0.73;
-
-
-                                        Date currDate = new Date();
-                                        int currHour = currDate.getHours();
-
-                                        int H = currHour - hoursAtFirstDrink;
-
-                                        bac = (A * 5.14) / (currWeight * r) - (0.015 * H);
-                                        DecimalFormat df2 = new DecimalFormat(".##");
-                                        //df2.format(bac);
-                                        //String bacText = bac.toString();
-                                        bacVal.setText(df2.format(bac));
-                                        bacVal.setVisibility(View.VISIBLE);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                            }
-                        });
-            }
-        });
+      
         //OH NO
         startBttn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -290,9 +191,6 @@ public class DrinkSessionFragment extends Fragment {
 
                                 loggedDate = (Date) map.get("DateTime");
                                 drinkType = (String) map.get("DrinkType");
-                                //quantity = (int) map.get("Quantity");
-                                //volume = (int) map.get("Volume");
-
 
                                 home.setGender(gender);
                                 home.setWeight(weight);
@@ -335,10 +233,22 @@ public class DrinkSessionFragment extends Fragment {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         @SuppressWarnings("unchecked")
                         Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                        if (map.get("SessionNumber") == null)
+
+                        if (map.get("Gender") == "male") {
+                            gender = "male";
+                        }
+                        else {
+                            gender = "female";
+                        }
+                        weight = ((Long) map.get("Weight")).intValue();
+                        home.setGender(gender);
+                        home.setWeight(weight);
+                        if( map.get("SessionNumber") == null) {
                             sessionNumber = 0;
-                        else
+                        }
+                        else {
                             sessionNumber = (((Long) map.get("SessionNumber")).intValue());
+                        }
                         if (map.get("InSession").equals(null))
                             inSession = "false";
                         else
@@ -367,6 +277,16 @@ public class DrinkSessionFragment extends Fragment {
                                     }
                                 }
                                 home.setDrinkList(totalDrinkList);
+                                gender = home.getGender();
+                                System.out.println(gender);
+                                weight = home.getWeight();
+                                ArrayList<Drink> dList = home.getDrinkList();
+                                int currSize = drinkList.size();
+                                Double currentBAC = 0.0;
+                                if (currSize > 0) {
+                                    currentBAC = BACtracker.liveBacTracker(drinkList, gender, weight, drinkList.get(currSize - 1).DateTime, new Date());
+                                }
+                                bacVal.setText(String.valueOf(currentBAC));
 
                                 adapter = new DrinkAdapter(getActivity(), drinkList);
                                 lv.setAdapter(adapter);
@@ -417,40 +337,56 @@ public class DrinkSessionFragment extends Fragment {
             }
         });
 
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<Drink> dList = home.getDrinkList();
+                int currSize = drinkList.size();
+                Double currentBAC = BACtracker.liveBacTracker(drinkList, gender, weight, drinkList.get(currSize - 1).DateTime, new Date());
+                bacVal.setText(String.valueOf(currentBAC));
+            }
+        });
+
+
+
         //for uber shenanigans
         ride.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Location stuff
                 Geocoder geocoder = new Geocoder(getContext());
-                List<Address> addresses = null;
+                List<Address> addresses = new ArrayList<Address>();
                 try {
                     addresses = geocoder.getFromLocationName(address, 1);
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Toast.makeText(getActivity(), "The address you entered is invalid! Until you enter a valid address in the User Options you cannot use the Uber feature",
+                            Toast.LENGTH_LONG).show();
+                    return;
                 }
-                if (addresses != null) {
+              
+                if (addresses != null || adresses.size() == 0) {
                     homeLatitude = addresses.get(0).getLatitude();
                     homeLongitude = addresses.get(0).getLongitude();
                 } else {
                     homeLatitude = 28.056999; //if not valid address, set coords to USF
                     homeLongitude = -82.425987;
                 }
+                else{
+                    homeLatitude= addresses.get(0).getLatitude();
+                    homeLongitude= addresses.get(0).getLongitude();
+                }
                 //Current location
-                Location location = ((Home) getActivity()).updateLocation();
+                loc = home.getLocation();
+
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 builder.setTitle("\n");
-                // Set up the input
 
                 SessionConfiguration config = new SessionConfiguration.Builder()
-                        // mandatory
                         .setClientId("dKGoCOX5friZA3OIgcOFqh3714Er29oY")
-                        // required for enhanced button features
                         .setServerToken("_tKgfeqrktEJXFYJPvnD4BQeof9eiN1wGsnhKxA3")
-                        // required for implicit grant authentication
                         .setRedirectUri("DrinkTracker://oauth/callback")
-                        // optional: set sandbox as operating environment
                         .setEnvironment(SessionConfiguration.Environment.SANDBOX)
                         .build();
 
@@ -489,44 +425,25 @@ public class DrinkSessionFragment extends Fragment {
                 builder.show();
             }
         });
+
         //When the user ends a session
         endBttn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseDatabase.getInstance().getReference()
-                        .child("users")
-                        .child(userID)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                @SuppressWarnings("unchecked")
-                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                FirebaseDatabase.getInstance().getReference()
-                                        .child("users")
-                                        .child(userID)
-                                        .child("InSession").setValue("False");
-                                //We increment the session number when a session is started so all we have to do is tell the database
-                                //the user is no longer in a session
-
+           @Override
+           public void onClick(View view) {
                                 FirebaseDatabase.getInstance().getReference().child("users").child(userID).child("InSession").setValue("False");
-
-                                startBttn.setVisibility(View.VISIBLE);
-                                startTxt.setVisibility(View.VISIBLE);
-                                drinkImg.setVisibility(View.VISIBLE);
-                                ride.setVisibility(View.VISIBLE);
-                                fab.hide();
-                                lv.setVisibility(View.GONE);
-                                lv.setAdapter(null);
-                                bacVal.setVisibility(View.GONE);
-                                bacTxt.setVisibility(View.GONE);
-                                endBttn.setVisibility(View.GONE);
-                                refresh.setVisibility(View.GONE);
-                            }
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                            }
-                        });
-            }
+                                home.setDrinkList(new ArrayList<Drink>());
+                               startBttn.setVisibility(View.VISIBLE);
+                               startTxt.setVisibility(View.VISIBLE);
+                               drinkImg.setVisibility(View.VISIBLE);
+                               ride.setVisibility(View.VISIBLE);
+                               fab.hide();
+                               lv.setVisibility(View.GONE);
+                               lv.setAdapter(null);
+                               bacVal.setVisibility(View.GONE);
+                               bacTxt.setVisibility(View.GONE);
+                               endBttn.setVisibility(View.GONE);
+                               refresh.setVisibility(View.GONE);
+                           }
         });
     }
 }

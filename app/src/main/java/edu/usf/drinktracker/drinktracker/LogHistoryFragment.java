@@ -47,6 +47,8 @@ public class LogHistoryFragment extends Fragment {
     private static final String TAG = "DRINKTAG";
     ListView lv;
     SessionAdapter adapter;
+    public static int weight;
+    public static String gender;
 
     public static LogHistoryFragment newInstance() {
         LogHistoryFragment fragment = new LogHistoryFragment();
@@ -69,11 +71,12 @@ public class LogHistoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Home home = (Home) getActivity();
         //graph = (GraphView) getActivity().findViewById(R.id.graph);
-        lv = (ListView) getActivity().findViewById(R.id.main_listview);
-
+        lv = (ListView) getActivity().findViewById(R.id.session_listview);
         user = user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
 
+        gender = home.getGender();
+        weight = home.getWeight();
 
         sessionMap = new HashMap<Integer, ArrayList<Drink>>();
         drinkList = home.getDrinkList();
@@ -82,19 +85,24 @@ public class LogHistoryFragment extends Fragment {
         for (Drink d : drinkList) {
             if (sessionMap.containsKey(d.SessionNumber)) {
                 sessionMap.get(d.SessionNumber).add(d);
-            }
-            else {
+            } else {
                 ArrayList<Drink> tempList = new ArrayList<Drink>();
                 tempList.add(d);
                 sessionMap.put(d.SessionNumber, tempList);
             }
         }
         for (Integer i : sessionMap.keySet()) {
-            sessionList.add(new Session(i, sessionMap.get(i)));
+            if(sessionMap.get(i).size() > 1) {
+                sessionList.add(new Session(i, sessionMap.get(i)));
+            }
         }
 
         adapter = new SessionAdapter(getActivity(), sessionList);
         lv.setAdapter(adapter);
+    }
+
+
+
         /*
         ArrayList<Drink> testingDrinks = sessionList.get(0).DrinkList;
         Collections.sort(testingDrinks, new Comparator<Drink>() { //sorts the drinkList by dateTime
@@ -196,4 +204,4 @@ public class LogHistoryFragment extends Fragment {
         */
     }
 
-}
+

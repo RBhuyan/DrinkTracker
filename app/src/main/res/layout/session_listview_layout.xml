@@ -1,47 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    android:id="@+id/cardview_layout"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="#FEFEFE"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="4dp">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="150dp"
+        android:layout_height="53dp"
+        android:layout_marginLeft="130dp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:gravity="center_vertical"
+        android:text="Title"
+        android:textColor="@color/fui_bgGoogle" />
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="101dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:text = "Title" />
+    <com.jjoe64.graphview.GraphView
+        android:id="@+id/graph"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
 
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graph"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true" />
-        <!--
-        <ListView
-            android:id="@+id/drinks_list"
-            android:layout_width="match_parent"
-            android:layout_height="179dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true">
-        </ListView>
-```     -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/drinks_list_layout"
-            android:orientation="vertical">
-        </LinearLayout>
-    </LinearLayout>
-</android.support.v7.widget.CardView>
+</LinearLayout>
