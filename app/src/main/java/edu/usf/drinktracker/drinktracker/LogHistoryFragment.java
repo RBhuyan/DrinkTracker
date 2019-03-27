@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -44,6 +45,8 @@ public class LogHistoryFragment extends Fragment {
     final int MAX_DATA_POINTS = 100;
     SimpleDateFormat format;
     private static final String TAG = "DRINKTAG";
+    ListView lv;
+    SessionAdapter adapter;
 
     public static LogHistoryFragment newInstance() {
         LogHistoryFragment fragment = new LogHistoryFragment();
@@ -64,29 +67,76 @@ public class LogHistoryFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Home home = (Home) getActivity();
+        //graph = (GraphView) getActivity().findViewById(R.id.graph);
+        lv = (ListView) getActivity().findViewById(R.id.main_listview);
 
-        graph = (GraphView) getActivity().findViewById(R.id.graph);
         user = user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
+
+
         sessionMap = new HashMap<Integer, ArrayList<Drink>>();
-/*
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
-                new DataPoint(0, 1),
-                new DataPoint(1, 5),
-                new DataPoint(2, 3),
-                new DataPoint(3, 2),
-                new DataPoint(4, 6)
+        drinkList = home.getDrinkList();
+        sessionList = new ArrayList<Session>();
+
+        for (Drink d : drinkList) {
+            if (sessionMap.containsKey(d.SessionNumber)) {
+                sessionMap.get(d.SessionNumber).add(d);
+            }
+            else {
+                ArrayList<Drink> tempList = new ArrayList<Drink>();
+                tempList.add(d);
+                sessionMap.put(d.SessionNumber, tempList);
+            }
+        }
+        for (Integer i : sessionMap.keySet()) {
+            sessionList.add(new Session(i, sessionMap.get(i)));
+        }
+
+        adapter = new SessionAdapter(getActivity(), sessionList);
+        lv.setAdapter(adapter);
+        /*
+        ArrayList<Drink> testingDrinks = sessionList.get(0).DrinkList;
+        Collections.sort(testingDrinks, new Comparator<Drink>() { //sorts the drinkList by dateTime
+            @Override
+            public int compare(Drink r1, Drink r2) {
+                return r1.DateTime.compareTo(r2.DateTime);
+            }
         });
+        format = new SimpleDateFormat("MM-dd-HH-m");
+        int count = 0;
+        int listSize = testingDrinks.size();
+        DataPoint[] dp = new DataPoint[listSize];
+        Log.d("List size is " + Integer.toString(listSize), TAG);
+        for (Drink d : testingDrinks) {
+            Log.d(d.DateTime.toString(), TAG);
+            DataPoint dpp = new DataPoint(d.DateTime, count);
+            dp[count] = dpp;
+            count++;
+        }
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(dp);
         graph.addSeries(series);
-*/
 
+        // set date label formatter
+        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity(), format));
+        graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
 
+        // set manual x bounds to have nice steps
+        graph.getViewport().setMinX(testingDrinks.get(0).DateTime.getTime());
+        graph.getViewport().setMaxX(testingDrinks.get(listSize - 1).DateTime.getTime());
+        graph.getViewport().setXAxisBoundsManual(true);
+        graph.getGridLabelRenderer().setHumanRounding(false);
+        */
+
+        //We put an accessor function in Home so that we don't have to read from Firebase again! Following code has been replaced.
+        /*
         DatabaseReference drinkRef = FirebaseDatabase.getInstance().getReference().child("drinks");
         drinkRef.addValueEventListener(new ValueEventListener() { //HERE
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 drinkList = new ArrayList<>();
                 sessionList = new ArrayList<Session>();
+
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
                     Drink drink = ds.getValue(Drink.class);
 
@@ -143,6 +193,7 @@ public class LogHistoryFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
+        */
     }
 
 }
