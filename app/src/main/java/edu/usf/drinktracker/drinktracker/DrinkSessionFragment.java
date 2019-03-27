@@ -61,8 +61,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.text.DecimalFormat;
 import java.util.concurrent.Executor;
-import edu.usf.drinktracker.drinktracker.R;
-
+//import edu.usf.drinktracker.drinktracker.Globals;
 import static com.firebase.ui.auth.ui.email.EmailLinkFragment.TAG;
 
 
@@ -94,7 +93,10 @@ public class DrinkSessionFragment extends Fragment {
     private int locationRequestCode = 1000;
     private double wayLatitude = 0.0, wayLongitude = 0.0;
     public FusedLocationProviderClient mFusedLocationClient;
-    Double totalQuantity, totalVolume, highestVolume;
+    Double totalQuantity = 0.0, totalVolume = 0.0;
+    Double highestVolume;
+    ArrayList<Double> BACArray = new ArrayList<Double>();
+    Double avgBAC = 0.0;
 
     Double bac = 0.0;
 
@@ -204,7 +206,7 @@ public class DrinkSessionFragment extends Fragment {
                                         Double A = 0.0;
                                         Double ouncesDrank = 0.0;
                                         int hoursAtFirstDrink = drinkList.get(0).DateTime.getHours();
-
+                                        highestVolume = drinkList.get(0).Volume;
                                         for (int i = 0; i < drinkList.size(); i++) {
                                             //Get total ounces of alcohol consumed
                                             Drink currentDrink = drinkList.get(i);
@@ -239,8 +241,24 @@ public class DrinkSessionFragment extends Fragment {
 
 
                                         }
+                                        Globals globals = Globals.getInstance();
 
 
+                                        //Calculate average amount of drinks had by the user in all sessions
+                                        Double averageDrinks = totalQuantity/sessionNumber;
+                                        globals.setAvg_drinks_val(averageDrinks);
+                                        //avg_drinks_val.setVisibility(View.VISIBLE);
+
+                                        //Average volume per session (Add all (volume*quantity) / # of sessions)
+                                        Double totalVolConsumed = (totalVolume*totalQuantity)/sessionNumber;
+                                        globals.setAvg_vol_val(totalVolConsumed);
+                                        //avg_vol_val.setText(totalVolConsumed.toString());
+                                        //avg_vol_val.setVisibility(View.VISIBLE);
+
+                                        //Highest Volume Consumed (Find max in the array of volumes)
+                                        globals.setHighest_vol_val(highestVolume);
+                                        //highest_vol_val.setText(highest_vol_val.toString());
+                                        //highest_vol_val.setVisibility(View.VISIBLE);
                                         Double r;
                                         if (currGender == "Female")
                                             r = 0.66;
@@ -254,9 +272,11 @@ public class DrinkSessionFragment extends Fragment {
                                         int H = currHour - hoursAtFirstDrink;
 
                                         bac = (A * 5.14) / (currWeight * r) - (0.015 * H);
+                                        BACArray.add(bac);
                                         DecimalFormat df2 = new DecimalFormat(".##");
-                                        //df2.format(bac);
-                                        //String bacText = bac.toString();
+                                        String formattedBAC = df2.format(bac);
+
+
                                         bacVal.setText(df2.format(bac));
                                         bacVal.setVisibility(View.VISIBLE);
                                     }
@@ -493,6 +513,15 @@ public class DrinkSessionFragment extends Fragment {
         endBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                for(int i = 0; i < BACArray.size(); i++)
+                {
+                    avgBAC = avgBAC + BACArray.get(i);
+                }
+                avgBAC = avgBAC/sessionNumber;
+                Globals globals = Globals.getInstance();
+                if(sessionNumber < 10)
+                    globals.put(Integer.toString(sessionNumber), avgBAC);
+
                 FirebaseDatabase.getInstance().getReference()
                         .child("users")
                         .child(userID)
