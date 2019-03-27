@@ -152,4 +152,14 @@
         android:background="@android:color/white"
         tools:layout_editor_absoluteX="0dp" />
 
+    <ImageView
+        android:id="@+id/refresh"
+        android:layout_width="42dp"
+        android:layout_height="45dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="342dp"
+        android:layout_marginTop="40dp"
+        android:src="@android:drawable/stat_notify_sync" />
+
 </RelativeLayout>

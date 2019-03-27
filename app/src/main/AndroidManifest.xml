@@ -21,7 +21,8 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <activity android:name=".Login">
+        <activity android:name=".Login"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,6 +32,7 @@
         <activity android:name=".UberTest" />
         <activity
             android:name=".Signup"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Login">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -38,13 +40,16 @@
         </activity>
         <activity
             android:name=".Home"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_home" />
-        <activity android:name=".NewDrink">
+        <activity android:name=".NewDrink"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Home" />
         </activity>
-        <activity android:name=".UserSettings">
+        <activity android:name=".UserSettings"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Home" />
