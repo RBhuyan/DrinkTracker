@@ -48,8 +48,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/truiton_image"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="138dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginStart="115dp"
+        android:layout_marginTop="43dp"
         android:fontFamily="sans-serif-smallcaps"
         android:text="Analytics"
         android:textSize="30sp"
@@ -69,10 +69,10 @@
 
     <TextView
         android:id="@+id/avg_drinks_val"
-        android:layout_width="wrap_content"
+        android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/avg_drinks"
-        android:layout_marginLeft="125dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="0dp"
         android:layout_toRightOf="@+id/avg_drinks"
         android:fontFamily="sans-serif-smallcaps"
@@ -101,7 +101,7 @@
 
     <TextView
         android:id="@+id/avg_vol_val"
-        android:layout_width="wrap_content"
+        android:layout_width="96dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/view4"
         android:layout_alignEnd="@+id/avg_drinks_val"
@@ -131,8 +131,8 @@
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/highest_vol_val"
-        android:layout_width="wrap_content"
+        android:id="@+id/max_vol"
+        android:layout_width="121dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/view5"
         android:layout_alignEnd="@+id/avg_vol_val"
@@ -148,15 +148,5 @@
         android:layout_height="1dp"
         android:background="@android:color/white"
         tools:layout_editor_absoluteX="0dp" />
-
-    <Button
-        android:id="@+id/refresh"
-        android:layout_width="173dp"
-        android:layout_height="30dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="342dp"
-        android:layout_marginTop="40dp"
-        android:src="@android:drawable/stat_notify_sync"
-        android:text="REFRESH" />
 
 </RelativeLayout>

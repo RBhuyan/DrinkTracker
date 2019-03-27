@@ -36,20 +36,23 @@ import java.util.Date;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 
 public class AnalyticsFragment extends Fragment {
     TextView testTxt;
     Button testBttn;
-    Button refresh;
     FirebaseAuth auth;
-    String userID;
-    int sessionNumber;
-    ArrayList<Drink> drinkList = new ArrayList<Drink>();
-    int totalQuantity = 0;
-    Double totalVolume = 0.0;
-    Double highestVolume;
+    String userID, gender;
+    DataPoint[] dp;
+    int sessionNumber, weight;
+    ArrayList<Drink> drinkList;
+    ArrayList<Session> sessionList;
+    Double avgVolume, avgQuant;
+    Double maxV;
+    HashMap<Integer, ArrayList<Drink>> sessionMap;
+    HashMap<Integer, Double> sessionAverages;
 
     TextView avg_drinks_val, avg_vol_val, highest_vol_val;
 
@@ -71,31 +74,64 @@ public class AnalyticsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_analytics, container, false);
 
-
-        View v = inflater.inflate(R.layout.fragment_analytics, container, false);
-
-
-        return v;
     }
 
     @Override
-    public void onViewCreated(View v, Bundle savedInstanceState) {
-        super.onViewCreated(v, savedInstanceState);
-
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Home home = (Home) getActivity();
         auth = FirebaseAuth.getInstance();
         userID = auth.getUid();
         avg_drinks_val = (TextView) getActivity().findViewById(R.id.avg_drinks_val);
         avg_vol_val = (TextView) getActivity().findViewById(R.id.avg_vol_val);
-        highest_vol_val = (TextView) getActivity().findViewById(R.id.highest_vol_val);
-        refresh = (Button) getActivity().findViewById(R.id.refresh);
+        highest_vol_val = (TextView) getActivity().findViewById(R.id.max_vol);
         GraphView graph = (GraphView) getActivity().findViewById(R.id.graph);
+        gender = home.getGender();
+        weight = home.getWeight();
 
-        PointsGraphSeries<DataPoint> series = new PointsGraphSeries<>(new DataPoint[]{ // these points are a test will add more points after each session.
-                new DataPoint(1, .08),
-                new DataPoint(2, .11),
-                new DataPoint(3, .05)
-        });
+        drinkList = home.getDrinkList();
+        sessionMap = new HashMap<Integer, ArrayList<Drink>>();
+        sessionList = new ArrayList<Session>();
+
+
+        //Iterate it through each drink and end up with a HashMap mapping session numbers to an ArrayList of the drinks in that session
+        for (Drink d : drinkList) {
+            if (sessionMap.containsKey(d.SessionNumber)) {
+                sessionMap.get(d.SessionNumber).add(d);
+            } else {
+                ArrayList<Drink> tempList = new ArrayList<Drink>();
+                tempList.add(d);
+                sessionMap.put(d.SessionNumber, tempList);
+            }
+        }
+        for (Integer i : sessionMap.keySet()) {
+            if(sessionMap.get(i).size() > 1) {
+                sessionList.add(new Session(i, sessionMap.get(i)));
+            }
+        }
+
+        if (sessionList.size() < 2) {
+            avg_vol_val.setText("Needs more info");
+            avg_drinks_val.setText("Needs more info");
+            highest_vol_val.setText("Needs more info");
+        }
+
+        avg_vol_val.setText(String.valueOf(new DecimalFormat("#.##").format(returnAverageVolume(sessionList))));
+        avg_drinks_val.setText(String.valueOf(new DecimalFormat("#.##").format(returnAverageQuantity(sessionList))));
+        highest_vol_val.setText(String.valueOf(new DecimalFormat("#.##").format(returnMaxVolume(sessionList))));
+        sessionAverages = returnSessionAverages(sessionList);
+
+        dp = new DataPoint[sessionAverages.size()];
+        for (int i : sessionAverages.keySet()) {
+            System.out.println(i + " , " + sessionAverages.get(i));
+            DataPoint dataP = new DataPoint(i, sessionAverages.get(i)/100);
+            dp[i] = dataP;
+        }
+
+        PointsGraphSeries<DataPoint> series = new PointsGraphSeries<DataPoint>(dp);
+
         graph.setTitle("Average BAC Per Session");
         graph.setTitleTextSize(75);
         graph.getGridLabelRenderer().setHorizontalAxisTitle("Sessions");
@@ -112,103 +148,60 @@ public class AnalyticsFragment extends Fragment {
         graph.getViewport().setYAxisBoundsManual(true);
         graph.getViewport().setMaxY(0.15);
         graph.getViewport().setMinY(0.0);
+    }
 
-        refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                avg_vol_val.setText("90");
+    public Double returnAverageVolume(ArrayList<Session> sList){
+        double totalVol = 0.0;
+        for (Session s : sList) {
+            for (Drink d : s.DrinkList) {
+                totalVol += d.Volume;
             }
-        });
-        //add if more than 1 session make graph visible
+        }
+        return totalVol/ sList.size();
+    }
 
-        //on data change for sessions, add new point for new session.
-        /*refresh.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                FirebaseDatabase.getInstance().getReference()
-                        .child("users")
-                        .child(userID)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                @SuppressWarnings("unchecked")
-                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                final String currGender = (String) map.get("Gender");
-                                final int currWeight = ((Long) map.get("Weight")).intValue();
-                                if (map.get("SessionNumber") == null)
-                                    sessionNumber = 0;
-                                else
-                                    sessionNumber = (((Long) map.get("SessionNumber")).intValue());
+    public double returnAverageQuantity(ArrayList<Session> sList){
+        double totalQuant = 0.0;
+        for (Session s : sList) {
+            for (Drink d : s.DrinkList) {
+                totalQuant += d.Quantity;
+            }
+        }
+        return totalQuant/ sList.size();
+    }
 
+    public double returnMaxVolume(ArrayList<Session> sList) {
+        double localMax = 0.0;
+        double currentVol = 0.0;
+        for (Session s : sList) {
+            for (Drink d : s.DrinkList) {
+                 currentVol = d.Volume;
+            }
+            if (currentVol > localMax) {
+                localMax = currentVol;
+            }
+        }
+        return localMax;
+    }
 
-                                final DatabaseReference drinks = FirebaseDatabase.getInstance().getReference().child("drinks");
-                                drinks.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        drinkList = new ArrayList<>();
-                                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                            String drinkType = ds.child("DrinkType").getValue(String.class);
-                                            Double volume = ds.child("Volume").getValue(Double.class);
+    //Escape function if Session's DrinkList is null, empty, or only has 1 element
+    public HashMap<Integer, Double> returnSessionAverages(ArrayList<Session> sList) {
+        HashMap<Integer, Double> map = new HashMap<>();
+        int count = 0;
+        Double localTotal = 0.0;
+        Date startDate;
+        for (Session s : sList) {
+            for (Drink d : s.DrinkList) {
+                Map<Date, Double> sessionTracker = BACtracker.sessionBacTracker(s.DrinkList, gender, weight);
+                for (Date date : sessionTracker.keySet()) {
+                    localTotal += sessionTracker.get(date);
+                }
+            }
+            map.put(count, (localTotal/s.DrinkList.size()));
+            count++;
+        }
+        return map;
+    }
+}
 
-                                            totalVolume = totalVolume + volume;
-
-                                            Date drinkDate = ds.child("DateTime").getValue(Date.class);
-
-                                            int quantity = ds.child("Quantity").getValue(int.class);
-                                            totalQuantity = totalQuantity + quantity;
-
-                                            int drinkSessionNumber = ds.child("SessionNumber").getValue(int.class);
-                                            String drinkUserID = ds.child("UserID").getValue(String.class);
-                                            if (drinkUserID.equals(userID)) {
-                                                drinkList.add(new Drink(drinkType, volume, quantity, drinkDate, drinkSessionNumber, userID));
-                                            }
-                                        }
-                                        //Initialize highest volume consumed to the first drink
-                                        highestVolume = drinkList.get(0).Volume;
-
-                                        for (int i = 0; i < drinkList.size(); i++) {
-                                            Drink currentDrink = drinkList.get(i);
-
-
-                                            //Calculate total amount of drinks had by the user in all sessions
-                                            totalQuantity = totalQuantity + currentDrink.Quantity;
-
-                                            //Calculate total volume of alcohol consumed by the user in all sessions
-                                            totalVolume = totalVolume + (currentDrink.Quantity * currentDrink.Volume);
-
-                                            //Get highest volume consumed
-                                            if (currentDrink.Volume > highestVolume)
-                                                highestVolume = currentDrink.Volume;
-
-                                        }
-
-
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    }
-                                });
-
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                            }
-                        });
-                //Calculate average amount of drinks had by the user in all sessions
-                                /*int averageDrinks = totalQuantity/sessionNumber;
-                                avg_drinks_val.setText(averageDrinks);
-                                avg_drinks_val.setVisibility(View.VISIBLE);
-
-                                //Average volume per session (Add all (volume*quantity) / # of sessions)
-                                Double totalVolConsumed = (totalVolume*totalQuantity)/sessionNumber;
-                                avg_vol_val.setText(totalVolConsumed.toString());
-                                avg_vol_val.setVisibility(View.VISIBLE);
-
-                                //Highest Volume Consumed (Find max in the array of volumes)
-                                highest_vol_val.setText(highest_vol_val.toString());
-                                highest_vol_val.setVisibility(View.VISIBLE);*/
-            }};
-        //});
-  // }}
 

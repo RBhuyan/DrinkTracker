@@ -105,6 +105,7 @@ public class SessionAdapter extends ArrayAdapter<Session> {
             graph.getViewport().setMaxX(session.DrinkList.get(realSize - 1).DateTime.getTime());
             graph.getViewport().setXAxisBoundsManual(true);
             graph.getGridLabelRenderer().setHumanRounding(false);
+            graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getContext(), new SimpleDateFormat("HH:mm")));
         }
         catch (Exception e) {
             System.out.println(e);

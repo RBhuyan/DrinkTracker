@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class UserSettings extends AppCompatActivity {
     android.support.v7.widget.Toolbar toolbar;
-    Button changeAddressBttn, changeWeightBttn, deleteAccountBttn, submitBttn, changeNameBttn, changeEmailBttn;
+    Button changeAddressBttn, changeWeightBttn, submitBttn, changeNameBttn, changeEmailBttn;
     EditText changeAddressTxt, changeWeightTxt;
     FirebaseDatabase mFirebaseInstance;
     DatabaseReference mFirebaseDatabase;
@@ -42,7 +42,6 @@ public class UserSettings extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Displays the back nav arrow
 
-        deleteAccountBttn = (Button) findViewById(R.id.delete_account_bttn);
         submitBttn = (Button) findViewById(R.id.submit_bttn);
 
         changeAddressTxt = (EditText) findViewById(R.id.new_address_txt);
