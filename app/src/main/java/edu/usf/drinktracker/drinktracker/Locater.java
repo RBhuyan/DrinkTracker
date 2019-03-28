@@ -29,7 +29,6 @@ public class Locater {
 
     public Location returnLocation() {
 
-
         return mLastKnownLocation;
     }
 

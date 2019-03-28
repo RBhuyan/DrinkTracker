@@ -407,6 +407,9 @@ public class DrinkSessionFragment extends Fragment {
                     homeLatitude= 28.056999; //if not valid address, set coords to USF
                     homeLongitude = -82.425987;
                 }
+                //Current location
+                Location location = ((Home) getActivity()).updateLocation();
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 builder.setTitle("\n");
                 // Set up the input
@@ -435,7 +438,7 @@ public class DrinkSessionFragment extends Fragment {
                             .setDropoffLocation(
                                     homeLatitude, homeLongitude, "Home", address)
                             // Required for pickup estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of pickup location
-                            .setPickupLocation(27.962975, -82.283429, "Current Location", "132 Valley Cir, Brandon, FL 33510")
+                            .setPickupLocation(location.getLatitude(), location.getLongitude(), "Current Location", "132 Valley Cir, Brandon, FL 33510")
 
                             .build();
 // set parameters for the RideRequestButton instance
