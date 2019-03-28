@@ -51,6 +51,9 @@ public class AnalyticsFragment extends Fragment {
                     new DataPoint(2, .11),
                     new DataPoint(3, .05)
             });
+
+            //add points here
+
             graph.setTitle("Average BAC Per Session");
             graph.setTitleTextSize(75);
             graph.getGridLabelRenderer().setHorizontalAxisTitle("Sessions");

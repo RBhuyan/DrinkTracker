@@ -113,7 +113,7 @@ public class Signup extends AppCompatActivity {
                 final String gender = genderData;
                 final String address = addressData.getText().toString().trim();
                 final String weightTxt = weightData.getText().toString();
-                final int weight = Integer.parseInt(weightTxt);
+
 
                 //this is not working fun fact :)
                 if(TextUtils.isEmpty(name)){
@@ -140,7 +140,8 @@ public class Signup extends AppCompatActivity {
                     return;
                 }
 
-
+                // Do not move this. It will crash the app if you put it will the other variables because it may not be initialized
+                final int weight = Integer.parseInt(weightTxt);
 
                 //Segment below is responsible for USER DATABASE CREATION
 
