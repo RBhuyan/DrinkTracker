@@ -94,21 +94,6 @@
         android:inputType="number|numberDecimal"
         android:text="12" />
 
-    <Button
-        android:id="@+id/add_drink"
-        android:layout_width="87dp"
-        android:layout_height="53dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="154dp"
-        android:layout_marginTop="525dp"
-        android:layout_marginEnd="169dp"
-        android:layout_marginBottom="153dp"
-        android:fontFamily="sans-serif-smallcaps"
-        android:text="Add Drink" />
-
     <TimePicker
         android:id="@+id/timePicker1"
         android:layout_width="214dp"
@@ -124,5 +109,19 @@
 
         android:timePickerMode="spinner"
         android:visibility="visible" />
+
+    <Button
+        android:id="@+id/add_drink"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="162dp"
+        android:layout_marginTop="534dp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="Add Drink"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
 </RelativeLayout>

@@ -149,14 +149,4 @@
         android:background="@android:color/white"
         tools:layout_editor_absoluteX="0dp" />
 
-    <Button
-        android:id="@+id/refresh"
-        android:layout_width="173dp"
-        android:layout_height="30dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="342dp"
-        android:layout_marginTop="40dp"
-        android:src="@android:drawable/stat_notify_sync"
-        android:text="REFRESH" />
-
 </RelativeLayout>

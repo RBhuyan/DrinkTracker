@@ -365,17 +365,14 @@ public class DrinkSessionFragment extends Fragment {
                     return;
                 }
               
-                if (addresses != null || adresses.size() == 0) {
+                if (addresses != null || addresses.size() == 0) {
                     homeLatitude = addresses.get(0).getLatitude();
                     homeLongitude = addresses.get(0).getLongitude();
                 } else {
                     homeLatitude = 28.056999; //if not valid address, set coords to USF
                     homeLongitude = -82.425987;
                 }
-                else{
-                    homeLatitude= addresses.get(0).getLatitude();
-                    homeLongitude= addresses.get(0).getLongitude();
-                }
+
                 //Current location
                 loc = home.getLocation();
 
@@ -403,7 +400,7 @@ public class DrinkSessionFragment extends Fragment {
                         .setDropoffLocation(
                                 homeLatitude, homeLongitude, "Home", address)
                         // Required for pickup estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of pickup location
-                        .setPickupLocation(location.getLatitude(), location.getLongitude(), "Current Location", "132 Valley Cir, Brandon, FL 33510")
+                        .setPickupLocation(loc.getLatitude(), loc.getLongitude(), "Current Location", "132 Valley Cir, Brandon, FL 33510")
 
                         .build();
                 // set parameters for the RideRequestButton instance

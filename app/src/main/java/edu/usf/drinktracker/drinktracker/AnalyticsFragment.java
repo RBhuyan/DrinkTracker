@@ -88,13 +88,13 @@ public class AnalyticsFragment extends Fragment {
         avg_drinks_val = (TextView) getActivity().findViewById(R.id.avg_drinks_val);
         avg_vol_val = (TextView) getActivity().findViewById(R.id.avg_vol_val);
         highest_vol_val = (TextView) getActivity().findViewById(R.id.highest_vol_val);
-        refresh = (Button) getActivity().findViewById(R.id.refresh);
+        //refresh = (Button) getActivity().findViewById(R.id.refresh);
         GraphView graph = (GraphView) getActivity().findViewById(R.id.graph);
 
         PointsGraphSeries<DataPoint> series = new PointsGraphSeries<>(new DataPoint[]{ // these points are a test will add more points after each session.
-                new DataPoint(1, .08),
-                new DataPoint(2, .11),
-                new DataPoint(3, .05)
+               // new DataPoint(1, .08),
+               // new DataPoint(2, .11),
+              // new DataPoint(3, .05)
         });
         graph.setTitle("Average BAC Per Session");
         graph.setTitleTextSize(75);
@@ -103,7 +103,7 @@ public class AnalyticsFragment extends Fragment {
 
         graph.setBackgroundColor(Color.DKGRAY);
         graph.getGridLabelRenderer().setHumanRounding(false, false);
-        graph.getGridLabelRenderer().setNumHorizontalLabels((int) series.getHighestValueX());
+        graph.getGridLabelRenderer().setNumHorizontalLabels((int) series.getHighestValueX() + 1);
         graph.getGridLabelRenderer().setNumVerticalLabels(6);
 
         graph.addSeries(series);
@@ -113,12 +113,12 @@ public class AnalyticsFragment extends Fragment {
         graph.getViewport().setMaxY(0.15);
         graph.getViewport().setMinY(0.0);
 
-        refresh.setOnClickListener(new View.OnClickListener() {
+/*        refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 avg_vol_val.setText("90");
             }
-        });
+        });*/
         //add if more than 1 session make graph visible
 
         //on data change for sessions, add new point for new session.
